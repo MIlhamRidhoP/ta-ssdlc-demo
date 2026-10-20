@@ -1,0 +1,415 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39435204265,
+    "nomor": 2,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": "openai",
+    "model_diminta": "gpt-6.1-sol",
+    "model_menjawab": "gpt-6.1-sol",
+    "kondisi": "utama",
+    "skenario": "C",
+    "mode_model": "tunggal",
+    "mulai": "2026-10-20T14:00:59.029Z",
+    "selesai": "2026-10-20T14:04:42.660Z",
+    "durasi_detik": 224,
+    "objek_uji": {
+      "commit": "d5af62ee82a63777c2ccf6bbf353910d45b61d29",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": "d5af62ee82a63777c2ccf6bbf353910d45b61d29",
+      "bersih": true
+    },
+    "hash_prompt": {
+      "system": "bb687afc7f13696bf922240f0923c7266aa3f28fd645971bf9d392733e19c7fa",
+      "user_deteksi": "568d6cbaa989f393a995306376ca6d507884265226f414338fb0093e9990906c"
+    },
+    "sumber_sonar": null,
+    "analisis_sonar": {
+      "tanggal": null,
+      "revisi": null,
+      "tree_src": null
+    },
+    "sonar_beku": null,
+    "biaya_usd": 0.168089,
+    "status_panggilan": {
+      "total": 1,
+      "ok": 1,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0
+    },
+    "pipeline": null
+  },
+  "alerts": [],
+  "findings": [
+    {
+      "id": "T-01",
+      "file": "src/controllers/cutiController.js",
+      "baris": 50,
+      "fungsi": "exports.create",
+      "jenis": "Mass Assignment Status Cuti",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Field status dari body POST /api/cuti/me disalin ke data dan diteruskan ke cutiModel.create, yang menggunakannya sebagai status awal pengajuan. Mahasiswa dapat mengirim status disetujui untuk melewati proses keputusan admin karena status awal tidak dipaksakan menjadi diajukan.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "6934101fd7ff5259",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 47,
+        "baris": [
+          "    data.dokumen_id = dokumenId;",
+          "  }",
+          "",
+          "  if (req.body?.status) data.status = req.body.status;",
+          "  const id = await model.create({ ...data, mahasiswa_id: mahasiswaId });",
+          "  ",
+          "  const row = await model.findById(id);"
+        ]
+      }
+    },
+    {
+      "id": "T-02",
+      "file": "src/controllers/krsController.js",
+      "baris": 70,
+      "fungsi": "exports.addItem",
+      "jenis": "Race Condition Penambahan KRS",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": "Permintaan penambahan mata kuliah memeriksa header.status sebelum memanggil model.addItem dalam operasi database terpisah. Permintaan submit atau lock yang berjalan bersamaan dapat mengubah status setelah pemeriksaan tersebut, sementara INSERT tetap berhasil karena tidak memeriksa status maupun mengunci header. Akibatnya mahasiswa dapat menambah item setelah KRS submitted atau locked.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "5da0b95c4eda6888",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 67,
+        "baris": [
+          "    throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "  }",
+          "",
+          "  const id = await model.addItem(header.id, mataKuliahId);",
+          "  res.status(201).json({",
+          "    success: true,",
+          "    data: { id, krs_semester_id: header.id, mata_kuliah_id: mataKuliahId },"
+        ]
+      }
+    },
+    {
+      "id": "T-03",
+      "file": "src/controllers/krsController.js",
+      "baris": 87,
+      "fungsi": "exports.removeItem",
+      "jenis": "Race Condition Penghapusan KRS",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": "Status draft diperiksa melalui findItemOwned sebelum penghapusan dilakukan oleh model.removeItem dalam query terpisah. Mahasiswa dapat menjalankan penghapusan bersamaan dengan submit atau lock sehingga pemeriksaan menggunakan status lama, sedangkan DELETE hanya memeriksa id item. Item KRS dapat terhapus setelah statusnya tidak lagi mengizinkan perubahan.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "ea40b60deb2c2a39",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 84,
+        "baris": [
+          "    throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "  }",
+          "",
+          "  await model.removeItem(item.id);",
+          "  res.json({ success: true, data: { id: item.id, deleted: true } });",
+          "};",
+          ""
+        ]
+      }
+    },
+    {
+      "id": "T-04",
+      "file": "src/controllers/krsController.js",
+      "baris": 110,
+      "fungsi": "exports.submit",
+      "jenis": "Race Condition Validasi Kuota SKS",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": "Daftar item dan total SKS dibaca sebelum perubahan status menjadi submitted, tanpa transaksi atau penguncian yang mengikat validasi dengan perubahan tersebut. Permintaan addItem dapat menambahkan mata kuliah setelah pembacaan item tetapi sebelum transition, ketika status masih draft. Pemeriksaan status pada transition tidak mendeteksi perubahan item sehingga KRS yang melampaui kuota dapat disubmit.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "1d9244ccaf4cdad7",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 107,
+        "baris": [
+          "      { kuota, diajukan: total });",
+          "  }",
+          "",
+          "  const updated = await model.transition(header.id, 'draft', 'submitted');",
+          "  if (!updated) throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "",
+          "  res.json({ success: true, data: updated });"
+        ]
+      }
+    },
+    {
+      "id": "T-05",
+      "file": "src/controllers/mahasiswaController.js",
+      "baris": 96,
+      "fungsi": "exports.updateMe",
+      "jenis": "Mass Assignment Profil Mahasiswa",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Seluruh properti body PUT /api/mahasiswa/me, kecuali rekening, diteruskan ke model.updateByUserId tanpa whitelist maupun validasi RULES. Model menjadikan properti tersebut kolom UPDATE, sehingga mahasiswa dapat mengubah kolom identitas dan relasi seperti nim, nisn, dan user_id, bukan hanya field profil yang dibatasi. Pembatasan field pada jalur administrasi tidak diterapkan pada jalur pembaruan mandiri ini.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "14b02101d032ab8a",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 93,
+        "baris": [
+          "};",
+          "",
+          "exports.updateMe = async (req, res) => {",
+          "  const data = { ...req.body };",
+          "  delete data.rekening;",
+          "",
+          "  const rekeningBody = req.body?.rekening;"
+        ]
+      }
+    },
+    {
+      "id": "T-06",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 120,
+      "fungsi": "halamanKhs",
+      "jenis": "Stored HTML Injection",
+      "cwe": [
+        "CWE-79"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Nama mata kuliah dari body endpoint administrasi disimpan tanpa pembatasan markup, kemudian dimasukkan melalui i.nama ke halaman HTML KHS tanpa escapeHtml. Nama yang berisi tag HTML akan ditafsirkan sebagai markup ketika mahasiswa membuka KHS, sehingga dapat memanipulasi tampilan dokumen atau menyisipkan pengalihan halaman. CSP dari helmet() membatasi eksekusi skrip, tetapi tidak menetralkan injeksi markup tersebut.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "eb00929b7a02acc4",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 117,
+        "baris": [
+          "  const baris = items.map((i) => `",
+          "      <tr>",
+          "        <td>${escapeHtml(i.kode)}</td>",
+          "        <td>${i.nama}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.sks)}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.nilai_huruf)}</td>",
+          "      </tr>`).join('');"
+        ]
+      }
+    },
+    {
+      "id": "T-07",
+      "file": "src/models/cutiModel.js",
+      "baris": 53,
+      "fungsi": "exports.findOwned",
+      "jenis": "IDOR Pembacaan Pengajuan Cuti",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Parameter id dari GET /api/cuti/me/:id mencapai findOwned, tetapi query hanya memfilter c.id dan mengabaikan mahasiswaId yang diberikan controller. Mahasiswa yang mengetahui UUID pengajuan lain dapat membaca detail pengajuan tersebut, termasuk alasan, alamat, nomor telepon, dan catatan admin. Validasi UUID dan autentikasi tidak memastikan kepemilikan objek.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "f8039fdb4f671e02",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 50,
+        "baris": [
+          "",
+          "exports.findOwned = async (id, mahasiswaId) => {",
+          "  const { rows } = await pool.query(",
+          "    `${DETAIL_SELECT} WHERE c.id = $2`,",
+          "    [KEY, id]",
+          "  );",
+          "  return rows[0] || null;"
+        ]
+      }
+    },
+    {
+      "id": "T-08",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 55,
+      "fungsi": "listFrom",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Parameter q pada GET /api/mahasiswa diubah menjadi pola oleh listQuery lalu diinterpolasikan langsung ke literal SQL dalam listFrom. Transformasi tersebut hanya meng-escape karakter wildcard dan backslash, bukan tanda kutip SQL. Pengguna dengan akses admin dapat menyisipkan ekspresi atau subquery di luar operasi pencarian dan mengakses kemampuan database yang tidak diberikan oleh endpoint tersebut.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "7856b7607a83b706",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 52,
+        "baris": [
+          "  FROM mahasiswa m",
+          "  JOIN users u ON u.id = m.user_id",
+          "  WHERE ('${pola}' IS NULL",
+          "    OR m.nim ILIKE '${pola}' OR m.nama ILIKE '${pola}' OR u.email ILIKE '${pola}')`;",
+          "",
+          "exports.list = async ({ pola, orderBy, limit, offset }) => {",
+          "  const from = listFrom(pola);"
+        ]
+      }
+    },
+    {
+      "id": "T-09",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 145,
+      "fungsi": "exports.updateByUserId",
+      "jenis": "SQL Injection melalui Nama Kolom",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Nama properti body PUT /api/mahasiswa/me mencapai Object.keys(d), lalu disisipkan tanpa whitelist atau quoting ke bagian SET pada query UPDATE. Walaupun nilai properti diparameterisasi, nama propertinya dapat berisi ekspresi SQL dan subquery, misalnya untuk menyalin data tabel lain ke kolom profil yang dikembalikan dalam respons. Pembatasan WHERE user_id tidak mencegah injeksi pada struktur query ini.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "83075a9b4582fdea",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 142,
+        "baris": [
+          "    const kolom = Object.keys(d);",
+          "    const set = kolom.map((k, i) => `${k} = $${i + 2}`).join(', ');",
+          "    const { rows } = await client.query(",
+          "      `UPDATE mahasiswa SET ${set}, updated_at = now()",
+          "       WHERE user_id = $1",
+          "       RETURNING id`,",
+          "      [userId, ...kolom.map((k) => d[k])]"
+        ]
+      }
+    },
+    {
+      "id": "T-10",
+      "file": "src/models/nilaiModel.js",
+      "baris": 133,
+      "fungsi": "exports.publishedBySemester",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Parameter semester dari GET /api/nilai/me/khs hanya diperiksa agar berupa string tidak kosong, lalu diinterpolasikan langsung ke query publishedBySemester. Mahasiswa yang lolos middleware dapat memasukkan sintaks SQL untuk mengubah kondisi WHERE, termasuk melewati filter pemilik dan status published. Parameterisasi mahasiswaId tidak melindungi bagian semester yang dirangkai langsung.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "d9fa5fdb7e08aca0",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 130,
+        "baris": [
+          "     JOIN mata_kuliah mk ON mk.id = k.mata_kuliah_id",
+          "     WHERE ks.mahasiswa_id = $1",
+          "       AND n.status = 'published'",
+          "       AND ks.semester = '${semester}'",
+          "     ORDER BY mk.kode`,",
+          "    [mahasiswaId]",
+          "  );"
+        ]
+      }
+    },
+    {
+      "id": "T-11",
+      "file": "src/models/profilModel.js",
+      "baris": 38,
+      "fungsi": "exports.removeEmail",
+      "jenis": "IDOR Penghapusan Email",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "UUID dari DELETE /api/mahasiswa/me/email/:id digunakan untuk menghapus email hanya berdasarkan id. Walaupun controller menghitung mahasiswaId pemanggil, model mengabaikannya sehingga mahasiswa dapat menghapus email tambahan milik mahasiswa lain jika mengetahui UUID-nya. Query tidak memiliki pemeriksaan mahasiswa_id untuk membatasi kepemilikan.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "ac52cfe26c7e9a71",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 35,
+        "baris": [
+          "",
+          "exports.removeEmail = async (id, mahasiswaId) => {",
+          "  const { rowCount } = await pool.query(",
+          "    'DELETE FROM email_mahasiswa WHERE id = $1',",
+          "    [id]",
+          "  );",
+          "  return rowCount > 0;"
+        ]
+      }
+    },
+    {
+      "id": "T-12",
+      "file": "src/routes/authRoutes.js",
+      "baris": 5,
+      "fungsi": "POST /login",
+      "jenis": "Tidak Ada Pembatasan Percobaan Login",
+      "cwe": [
+        "CWE-307"
+      ],
+      "kategori_owasp": "A07",
+      "penjelasan": "Endpoint login menerima percobaan autentikasi tanpa pembatasan laju, penundaan bertahap, atau penguncian berdasarkan kegagalan. bcrypt dan DUMMY_HASH melindungi penyimpanan password serta mengurangi perbedaan waktu respons, tetapi tidak membatasi percobaan tebakan password secara otomatis. Pembatasan percobaan diperlukan sebagai penguatan terhadap brute force dan credential stuffing.",
+      "sifat": "hardening",
+      "keyakinan": "high",
+      "fingerprint": "37e379393a0e6760",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 2,
+        "baris": [
+          "const auth = require('../controllers/authController');",
+          "",
+          "router.post('/register', auth.register);",
+          "router.post('/login', auth.login);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      }
+    },
+    {
+      "id": "T-13",
+      "file": "src/routes/cutiRoutes.js",
+      "baris": 17,
+      "fungsi": "PUT /:id/status",
+      "jenis": "Missing Function-Level Authorization",
+      "cwe": [
+        "CWE-862"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Endpoint PUT /api/cuti/:id/status hanya dilindungi authenticate dan tidak memasang authorize('admin'). Pengguna mahasiswa, termasuk akun terdaftar yang belum memiliki profil, dapat mengirim keputusan disetujui atau ditolak untuk pengajuan mana pun yang masih diajukan karena controller juga tidak memeriksa role. Hal ini memberikan kemampuan keputusan administrasi kepada pengguna tanpa hak tersebut.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "8e6b1fc6805f4535",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 14,
+        "baris": [
+          "",
+          "router.get('/', authorize('admin'), c.listAdmin);",
+          "router.get('/:id', authorize('admin'), c.getById);",
+          "router.put('/:id/status', c.updateStatus);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      }
+    }
+  ]
+}
