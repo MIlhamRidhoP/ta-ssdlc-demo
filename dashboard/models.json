@@ -1,0 +1,97 @@
+{
+  "catatan": "Satu sumber daftar model untuk dashboard dan untuk validasi input workflow. biaya_terukur berisi titik ukur nyata: berapa biaya satu run pada sekian alert Sonar. Dashboard memperkirakan biaya run berikutnya dengan garis lurus lewat titik-titik itu (satu panggilan deteksi, ditambah satu panggilan verifikasi per alert), dan menyebut sumbernya. Perkiraan tetap perkiraan: biaya nyata bergantung panjang kode, jumlah alert, panjang jawaban model, dan tarif vendor saat run.",
+  "sumber_biaya": "hasil-eksperimen/20261019 (3 run per vendor, 5 alert) dan run #46 di branch security-results (1 alert)",
+  "models": [
+    {
+      "vendor": "google",
+      "id": "gemini-3.8-flash",
+      "label": "Gemini 3.8 Flash",
+      "jalur": "v1",
+      "bawaan": true,
+      "secret": "GEMINI_API_KEY",
+      "biaya_perkiraan_usd": null,
+      "catatan": "Model bawaan jalur v1. Biaya jalur v1 belum diukur; angka eksperimen 19 Okt berasal dari jalur v2 (6 panggilan per run) sehingga tidak berlaku di sini."
+    },
+    {
+      "vendor": "google",
+      "id": "gemini-3.1-pro-preview",
+      "label": "Gemini 3.1 Pro Preview (berbayar)",
+      "jalur": "v1",
+      "bawaan": false,
+      "secret": "GEMINI_API_KEY",
+      "biaya_perkiraan_usd": null,
+      "catatan": "Butuh billing aktif di project Google milik GEMINI_API_KEY. Biaya jalur v1 belum diukur."
+    },
+    {
+      "vendor": "google",
+      "id": "gemini-3.1-pro-preview",
+      "label": "Gemini 3.1 Pro Preview",
+      "jalur": "v2",
+      "bawaan": true,
+      "secret": "GEMINI_API_KEY",
+      "biaya_perkiraan_usd": 0.7631,
+      "catatan": "Model bawaan jalur v2. Punya dua titik ukur, jadi perkiraannya ikut jumlah alert.",
+      "biaya_terukur": [
+        {
+          "alert": 1,
+          "usd": 0.508244,
+          "sumber": "run #46, feat/prompt-v2, 19 Okt 2026"
+        },
+        {
+          "alert": 5,
+          "usd": 0.7631,
+          "sumber": "rata-rata 3 run eksperimen 19 Okt 2026"
+        }
+      ],
+      "biaya_rekomendasi_usd": {
+        "min": 0.1178,
+        "maks": 0.6962,
+        "sumber": "Perkiraan, bukan tarif. Dihitung dari prompt remediasi yang benar-benar terbentuk untuk run #49 (3 item) dan #53 (7 item); run #52 tidak punya item yang memenuhi syarat sehingga tidak memanggil sama sekali. Token input diturunkan dari panjang prompt dibagi rasio karakter per token yang diukur per vendor dari data eksperimen 19 Okt 2026 (google 2,70; anthropic 2,00; openai 3,31). Token keluaran dan thinking diperkirakan dari rasio yang terukur di run deteksi, dan itulah sumber ketidakpastian terbesar."
+      }
+    },
+    {
+      "vendor": "anthropic",
+      "id": "claude-sonnet-5-5",
+      "label": "Claude Sonnet 5.5",
+      "jalur": "v2",
+      "bawaan": false,
+      "secret": "ANTHROPIC_API_KEY",
+      "biaya_perkiraan_usd": 0.3702,
+      "catatan": "Secret ANTHROPIC_API_KEY sudah ada di GitHub Secrets. Baru satu titik ukur (5 alert), jadi perkiraannya belum ikut jumlah alert.",
+      "biaya_terukur": [
+        {
+          "alert": 5,
+          "usd": 0.3702,
+          "sumber": "rata-rata 3 run eksperimen 19 Okt 2026"
+        }
+      ],
+      "biaya_rekomendasi_usd": {
+        "min": 0.0137,
+        "maks": 0.0519,
+        "sumber": "Perkiraan, bukan tarif. Dihitung dari prompt remediasi yang benar-benar terbentuk untuk run #49 (3 item) dan #53 (7 item); run #52 tidak punya item yang memenuhi syarat sehingga tidak memanggil sama sekali. Token input diturunkan dari panjang prompt dibagi rasio karakter per token yang diukur per vendor dari data eksperimen 19 Okt 2026 (google 2,70; anthropic 2,00; openai 3,31). Token keluaran dan thinking diperkirakan dari rasio yang terukur di run deteksi, dan itulah sumber ketidakpastian terbesar."
+      }
+    },
+    {
+      "vendor": "openai",
+      "id": "gpt-6.1-sol",
+      "label": "GPT 6.1 Sol",
+      "jalur": "v2",
+      "bawaan": false,
+      "secret": "OPENAI_API_KEY",
+      "biaya_perkiraan_usd": 0.2031,
+      "catatan": "Secret OPENAI_API_KEY sudah ada di GitHub Secrets. Baru satu titik ukur (5 alert), jadi perkiraannya belum ikut jumlah alert.",
+      "biaya_terukur": [
+        {
+          "alert": 5,
+          "usd": 0.2031,
+          "sumber": "rata-rata 3 run eksperimen 19 Okt 2026"
+        }
+      ],
+      "biaya_rekomendasi_usd": {
+        "min": 0.0184,
+        "maks": 0.0932,
+        "sumber": "Perkiraan, bukan tarif. Dihitung dari prompt remediasi yang benar-benar terbentuk untuk run #49 (3 item) dan #53 (7 item); run #52 tidak punya item yang memenuhi syarat sehingga tidak memanggil sama sekali. Token input diturunkan dari panjang prompt dibagi rasio karakter per token yang diukur per vendor dari data eksperimen 19 Okt 2026 (google 2,70; anthropic 2,00; openai 3,31). Token keluaran dan thinking diperkirakan dari rasio yang terukur di run deteksi, dan itulah sumber ketidakpastian terbesar."
+      }
+    }
+  ]
+}

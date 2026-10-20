@@ -1,0 +1,46 @@
+{
+  "name": "ta-ssdlc-demo",
+  "version": "1.0.0",
+  "description": "Repo demo framework SSDLC berbasis DevOps dengan analisis keamanan berbantuan LLM, dijalankan pada objek uji yang sengaja berisi kerentanan. Bukan untuk dideploy.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "test:tanpa-server": "node scripts/tes-tanpa-server.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "seed:dummy": "node scripts/seed-dummy.js",
+    "scan:gemini": "node scripts/gemini-scan.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MIlhamRidhoP/ta-ssdlc-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "bugs": {
+    "url": "https://github.com/MIlhamRidhoP/ta-ssdlc-demo/issues"
+  },
+  "homepage": "https://github.com/MIlhamRidhoP/ta-ssdlc-demo#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "0.135.0",
+    "nodemon": "^3.1.14",
+    "openai": "7.39.0",
+    "undici": "7.30.1"
+  }
+}

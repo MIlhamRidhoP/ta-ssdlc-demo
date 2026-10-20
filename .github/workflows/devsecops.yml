@@ -1,0 +1,814 @@
+name: DevSecOps Pipeline
+# Label dari Security Dashboard dipakai untuk menemukan run hasil dispatch. Tanpa label,
+# run-name kosong dan GitHub memakai judul bawaan seperti sebelumnya.
+run-name: ${{ inputs.label && format('DevSecOps [{0}]', inputs.label) || '' }}
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+    inputs:
+      use_gemini:
+        description: 'Jalankan step Gemini (true = Skenario B, false = Skenario A)'
+        type: boolean
+        default: false
+      mode:
+        description: 'Mode analisis. auto = ikuti use_gemini (true = sast-llm, false = hanya build dan uji seperti sebelumnya)'
+        type: choice
+        options: [auto, sast, sast-llm]
+        default: auto
+      model:
+        description: 'Model untuk jalur v1 (mode sast-llm; diabaikan di jalur v2). Daftar sahnya ada di dashboard/models.json.'
+        type: choice
+        options: [gemini-3.8-flash, gemini-3.1-pro-preview]
+        default: gemini-3.8-flash
+      label:
+        description: 'Label unik dari Security Dashboard (opsional)'
+        type: string
+        default: ''
+      jalur:
+        description: 'Jalur analisis. v1 = gemini-scan (satu panggilan). v2 = llm-scan (deteksi + verifikasi per alert).'
+        type: choice
+        options: [v1, v2]
+        default: v2
+      skenario:
+        description: >-
+          Skenario analisis TA. A = SAST saja, tanpa panggilan LLM. B = SAST + LLM, tiap alert
+          SonarCloud diverifikasi model. C = LLM saja, tanpa SonarCloud. Dibiarkan kosong berarti
+          mengikuti mode: sast menjadi A, sast-llm menjadi B.
+        type: choice
+        options: ['', A, B, C]
+        default: ''
+      vendor_v2:
+        description: >-
+          Model untuk jalur v2. gabungan menjalankan ketiga vendor lalu menyatukan hasilnya, dan
+          hanya sah untuk skenario B.
+        type: choice
+        options: [google, anthropic, openai, gabungan]
+        default: google
+      konfirmasi_v2:
+        description: 'Ketik JALANKAN untuk menyetujui biaya panggilan berbayar jalur v2'
+        type: string
+        default: ''
+      sonar_branch_v2:
+        description: >-
+          Branch SonarCloud untuk jalur v2. ikut-branch-run = branch yang dipicu. Paket Free hanya
+          menganalisis main, jadi untuk branch lain pilih main; kecocokan data dijamin pemeriksaan
+          hash tree src/, bukan oleh nama branch.
+        type: choice
+        options: [ikut-branch-run, main]
+        default: ikut-branch-run
+      rekomendasi_ai:
+        description: >-
+          Tambahkan saran perbaikan dari AI (lapis 2) untuk temuan vulnerability dan alert yang
+          dikonfirmasi. Satu panggilan berbayar tambahan per run. Panduan umum per CWE (lapis 1)
+          selalu tampil tanpa input ini.
+        type: boolean
+        default: false
+      vendor_rekomendasi:
+        description: >-
+          Vendor yang menyusun rekomendasi AI pada mode gabungan, yang tidak punya satu vendor
+          sendiri. Diabaikan di mode satu model, yang memakai vendor runnya.
+        type: choice
+        options: [google, anthropic, openai]
+        default: google
+
+permissions:
+  contents: read
+
+# Versi action dipin ke tag mayor, mengikuti gaya repo ini. Semuanya sudah memakai runs.using:
+# node24; versi v4/v5 lama berjalan di Node 20 dan SonarSource/sonarqube-scan-action@v5 ditandai
+# GitHub mengandung kerentanan. Perubahan antarversi yang relevan untuk workflow ini:
+#   - actions/checkout v5-v7: hanya memblokir checkout fork pada pull_request_target dan
+#     workflow_run (tidak dipakai di sini). https://github.com/actions/checkout/releases
+#   - actions/setup-node v7: migrasi ESM dan NODE_AUTH_TOKEN tiruan dihapus; input node-version dan
+#     cache tidak berubah. https://github.com/actions/setup-node/releases
+#   - actions/upload-artifact v7: tambahan input archive; name, path, retention-days,
+#     if-no-files-found tetap. https://github.com/actions/upload-artifact/releases
+#   - actions/download-artifact v8: digest-mismatch kini gagal secara bawaan dan berkas non-zip
+#     tidak lagi otomatis diekstrak; input name dan path tetap.
+#     https://github.com/actions/download-artifact/releases
+#   - SonarSource/sonarqube-scan-action v6: action ditulis ulang ke JavaScript sehingga `args` tidak
+#     lagi diurai dengan sintaks bash penuh; argumen -D... di bawah tanpa spasi, jadi tetap sah.
+#     https://github.com/SonarSource/sonarqube-scan-action/releases/tag/v6.0.0
+#     v8: skipSignatureVerification kembali ke false, jadi binari scanner diverifikasi OpenPGP.
+#     https://github.com/SonarSource/sonarqube-scan-action#readme
+jobs:
+  build-test:
+    name: Build dan uji API
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependency
+        run: npm ci
+
+      # Database CI dibuang setiap run, jadi semua secret dibuat acak di sini
+      - name: Buat .env sementara
+        run: |
+          {
+            echo "PORT=3000"
+            echo "DB_HOST=db"
+            echo "DB_PORT=5432"
+            echo "DB_USER=ta_ci"
+            echo "DB_PASSWORD=$(openssl rand -hex 16)"
+            echo "DB_NAME=ta_ci"
+            echo "JWT_SECRET=$(openssl rand -hex 48)"
+            echo "PGCRYPTO_KEY=$(openssl rand -hex 48)"
+            echo "ADMIN_EMAIL=admin@akademik.local"
+            echo "ADMIN_PASSWORD=Adm$(openssl rand -hex 12)9"
+            echo "SEED_USER_PASSWORD=Seed$(openssl rand -hex 8)7"
+            echo "SEMESTER_AKTIF=2026-ganjil"
+          } > .env
+
+      - name: Jalankan container
+        run: docker compose up -d --build --wait app db
+
+      - name: Seed data
+        run: |
+          docker compose exec -T app npm run seed:admin
+          docker compose exec -T app npm run seed:dummy
+
+      - name: Uji API
+        run: npm test
+
+      - name: Log aplikasi
+        if: always()
+        run: docker compose logs app
+
+      - name: Bersihkan
+        if: always()
+        run: docker compose down -v
+
+  # Job analisis hanya berjalan pada workflow_dispatch dengan mode sast atau sast-llm.
+  # Pada push, semua job di bawah ini dilewati sehingga perilaku lama tidak berubah.
+  rencana:
+    name: Tentukan mode analisis
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
+      skenario: ${{ steps.mode.outputs.skenario }}
+      gabungan: ${{ steps.mode.outputs.gabungan }}
+      vendors: ${{ steps.mode.outputs.vendors }}
+    steps:
+      - name: Tentukan mode dan skenario
+        id: mode
+        env:
+          MODE_INPUT: ${{ inputs.mode }}
+          USE_GEMINI: ${{ inputs.use_gemini }}
+          SKENARIO_INPUT: ${{ inputs.skenario }}
+          VENDOR_V2: ${{ inputs.vendor_v2 }}
+          JALUR: ${{ inputs.jalur }}
+        run: |
+          set -euo pipefail
+          mode=none
+          case "$MODE_INPUT" in
+            sast|sast-llm) mode="$MODE_INPUT" ;;
+            *) if [ "$USE_GEMINI" = "true" ]; then mode=sast-llm; fi ;;
+          esac
+
+          # Skenario boleh dikosongkan. Dispatch lama tidak mengenal input ini, dan menurunkannya
+          # dari mode membuat perilakunya persis seperti sebelumnya: sast menjadi A, sast-llm
+          # menjadi B. Tidak ada dispatch lama yang berubah arti karena input ini ditambahkan.
+          skenario="$SKENARIO_INPUT"
+          if [ -z "$skenario" ]; then
+            case "$mode" in
+              sast) skenario=A ;;
+              sast-llm) skenario=B ;;
+              *) skenario=A ;;
+            esac
+          fi
+
+          gabungan=false
+          if [ "$VENDOR_V2" = "gabungan" ]; then gabungan=true; fi
+
+          # Penjaga kombinasi, dijalankan di job paling awal supaya menolak SEBELUM ada satu pun
+          # panggilan berbayar. Job rencana tidak pernah memanggil LLM.
+          if [ "$gabungan" = "true" ] && [ "$skenario" != "B" ]; then
+            echo "::error::Mode gabungan hanya sah untuk skenario B. Skenario yang diminta: $skenario." >&2
+            exit 1
+          fi
+          if [ "$skenario" = "A" ] && [ "$mode" = "sast-llm" ]; then
+            echo "::error::Skenario A tidak memakai LLM, tetapi mode yang diminta sast-llm. Pilih salah satu." >&2
+            exit 1
+          fi
+          if { [ "$skenario" = "B" ] || [ "$skenario" = "C" ]; } && [ "$mode" != "sast-llm" ]; then
+            echo "::error::Skenario $skenario membutuhkan mode sast-llm, tetapi mode yang diminta $mode." >&2
+            exit 1
+          fi
+          if [ "$skenario" = "C" ] && [ "$JALUR" != "v2" ]; then
+            echo "::error::Skenario C hanya tersedia di jalur v2." >&2
+            exit 1
+          fi
+
+          # Daftar vendor yang dijalankan, dipakai sebagai matriks job analisis. Mode satu model
+          # menghasilkan daftar berisi satu vendor, jadi kedua mode memakai job yang sama persis
+          # dan tidak ada jalur kode yang hanya dilalui salah satunya.
+          if [ "$gabungan" = "true" ]; then
+            vendors='["google","anthropic","openai"]'
+          else
+            vendors="[\"$VENDOR_V2\"]"
+          fi
+
+          {
+            echo "mode=$mode"
+            echo "skenario=$skenario"
+            echo "gabungan=$gabungan"
+            echo "vendors=$vendors"
+          } >> "$GITHUB_OUTPUT"
+          echo "Mode analisis: $mode, skenario: $skenario, gabungan: $gabungan"
+
+  sonarcloud:
+    name: Analisis SonarCloud
+    needs: rencana
+    if: needs.rencana.outputs.mode == 'sast' || needs.rencana.outputs.mode == 'sast-llm'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      # true hanya bila analisis Sonar yang dipakai punya src/ identik dengan commit yang berjalan.
+      analisis_siap: ${{ steps.siap.outputs.siap }}
+      sonar_branch: ${{ steps.siap.outputs.sonar_branch }}
+      sonar_revisi: ${{ steps.siap.outputs.sonar_revisi }}
+      sonar_tree_src: ${{ steps.siap.outputs.sonar_tree_src }}
+      commit_tree_src: ${{ steps.siap.outputs.commit_tree_src }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # sonar.qualitygate.wait membuat scanner menunggu hasil Quality Gate, yang baru bisa dihitung
+      # setelah server selesai memproses laporan analisis. Dokumentasi resmi:
+      # https://docs.sonarsource.com/sonarqube-cloud/analyzing-source-code/ci-based-analysis/github-actions-for-sonarcloud
+      # ("You fail a GitHub Actions workflow on quality-gate failure by making the scanner wait for
+      # the Quality Gate result and exit non-zero if it's failed.")
+      #
+      # continue-on-error dipertahankan dengan sengaja: objek uji memang berisi kerentanan tertanam,
+      # jadi gate merah tidak boleh menghentikan pipeline. Konsekuensinya, langkah ini juga menelan
+      # kegagalan analisis yang sesungguhnya, sehingga result job tidak cukup jadi bukti. Langkah
+      # berikutnya yang memisahkan "gate merah" dari "analisis tidak jadi".
+      #
+      # Paket Free SonarCloud hanya menganalisis branch main
+      # (https://docs.sonarsource.com/sonarqube-cloud/enriching/branch-analysis), sehingga scan di
+      # branch lain selalu berakhir "Organization is not allowed to access data from non main
+      # branches" (exit 3). Kalau jalur v2 memang sudah memilih analisis main lewat sonar_branch_v2,
+      # scan itu tidak dipakai siapa pun: dilewati supaya tidak ada anotasi merah tanpa sebab.
+      - name: SonarCloud scan
+        if: inputs.sonar_branch_v2 != 'main' || github.ref_name == 'main'
+        uses: SonarSource/sonarqube-scan-action@v8
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+
+      - name: Jelaskan mengapa scan dilewati
+        if: inputs.sonar_branch_v2 == 'main' && github.ref_name != 'main'
+        run: |
+          echo "::notice::Scan SonarCloud dilewati dengan sengaja. Branch $GITHUB_REF_NAME bukan main dan paket Free hanya menganalisis main, sedangkan input sonar_branch_v2=main berarti jalur v2 memakai analisis main yang sudah ada. Kecocokan datanya tetap dijamin pemeriksaan hash tree src/ pada langkah berikutnya, bukan oleh scan ini."
+
+      # Dispatch mode=sast di branch non-main: scan tetap dijalankan seperti sebelumnya dan memang
+      # gagal di paket Free. continue-on-error menahannya, notice ini menjelaskan sebabnya.
+      - name: Catat scan branch non-main yang memang gagal di paket Free
+        if: github.ref_name != 'main' && inputs.sonar_branch_v2 != 'main'
+        run: |
+          echo "::notice::Branch $GITHUB_REF_NAME bukan main. Paket Free SonarCloud hanya menganalisis main, jadi scan branch ini wajar gagal dan sengaja tidak menggagalkan pipeline. Jalur v2 dapat memakai input sonar_branch_v2=main; kecocokan datanya dijamin pemeriksaan hash tree src/."
+
+      # Kesiapan diukur dengan aturan yang sama seperti scripts/llm-scan.js: yang harus cocok adalah
+      # hash tree src/ pada revisi analisis Sonar versus commit yang berjalan, BUKAN nama branch atau
+      # kesamaan revisi. Dengan begitu analisis main tetap sah dipakai untuk commit di branch lain
+      # selama src/ tidak berubah, dan ditolak begitu src/ berbeda.
+      - name: Pastikan analisis Sonar cocok dengan commit ini
+        id: siap
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT: MIlhamRidhoP_ta-ssdlc-demo
+          BRANCH_PILIHAN: ${{ inputs.sonar_branch_v2 }}
+        run: |
+          sonar_branch="$GITHUB_REF_NAME"
+          if [ -n "$BRANCH_PILIHAN" ] && [ "$BRANCH_PILIHAN" != "ikut-branch-run" ]; then
+            sonar_branch="$BRANCH_PILIHAN"
+          fi
+          commit_tree=$(git rev-parse HEAD:src)
+          siap=false
+          revisi=""
+          sonar_tree=""
+          for percobaan in 1 2 3 4 5 6; do
+            revisi=$(curl -s -u "$SONAR_TOKEN:" \
+              "https://sonarcloud.io/api/project_analyses/search?project=$SONAR_PROJECT&branch=$sonar_branch&ps=1" \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s);process.stdout.write(j.analyses?.[0]?.revision??"")}catch(e){process.stdout.write("")}})')
+            if [ -n "$revisi" ] && git cat-file -e "$revisi^{commit}" 2>/dev/null; then
+              sonar_tree=$(git rev-parse "$revisi:src" 2>/dev/null || echo "")
+              if [ "$sonar_tree" = "$commit_tree" ]; then siap=true; break; fi
+            fi
+            echo "Percobaan $percobaan: branch Sonar $sonar_branch revisi ${revisi:-tidak-ada} tree ${sonar_tree:-tidak-ada} vs commit tree $commit_tree"
+            sleep 15
+          done
+          {
+            echo "siap=$siap"
+            echo "sonar_branch=$sonar_branch"
+            echo "sonar_revisi=$revisi"
+            echo "sonar_tree_src=$sonar_tree"
+            echo "commit_tree_src=$commit_tree"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "### Kesiapan analisis Sonar untuk jalur v2"
+            echo ""
+            echo "| Butir | Nilai |"
+            echo "|---|---|"
+            echo "| Branch Sonar dipakai | $sonar_branch |"
+            echo "| Revisi analisis Sonar | ${revisi:-tidak ada} |"
+            echo "| Hash tree src analisis | ${sonar_tree:-tidak ada} |"
+            echo "| Hash tree src commit | $commit_tree |"
+            echo "| Siap | $siap |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$siap" != "true" ]; then
+            echo "::warning::Analisis Sonar pada branch $sonar_branch tidak cocok dengan src/ commit ini. Jalur v2 dilewati, tidak ada panggilan LLM."
+          fi
+
+  analisis:
+    name: Analisis temuan (Sonar dan Gemini)
+    needs: [rencana, sonarcloud]
+    # inputs.jalur kosong pada push; jalur v2 mematikan job ini supaya tidak ada dua panggilan
+    # berbayar. Pengecualian mode=sast: jalur itu tidak memanggil LLM sama sekali dan hanya menarik
+    # temuan Sonar, jadi tetap dijalankan agar dispatch sast tetap menghasilkan sesuatu sejak jalur
+    # bawaan menjadi v2.
+    if: >-
+      needs.sonarcloud.result == 'success'
+      && (inputs.jalur != 'v2' || needs.rencana.outputs.mode == 'sast')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependency
+        run: npm ci
+
+      # dashboard/models.json adalah daftar sah; pilihan di input workflow hanya cermin yang bisa menyimpang.
+      - name: Validasi model terhadap dashboard/models.json
+        env:
+          MODEL: ${{ inputs.model }}
+        run: |
+          node -e '
+            const m = require("./dashboard/models.json").models.filter((x) => x.jalur === "v1");
+            if (!m.some((x) => x.id === process.env.MODEL)) {
+              console.error(`Model ${process.env.MODEL} tidak terdaftar untuk jalur v1 di dashboard/models.json`);
+              process.exit(1);
+            }
+          '
+
+      # --export-prompt mengambil data Sonar dan menyusun prompt tanpa memanggil Gemini.
+      - name: Ambil temuan Sonar
+        if: needs.rencana.outputs.mode == 'sast'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_BRANCH: ${{ github.ref_name }}
+        run: node scripts/gemini-scan.js --export-prompt
+
+      # Non-blocking: kegagalan Gemini (kuota, 503) tetap menghasilkan results.json dengan status gagal.
+      - name: Analisis Gemini (1 run)
+        if: needs.rencana.outputs.mode == 'sast-llm'
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GEMINI_MODEL: ${{ inputs.model }}
+          SONAR_BRANCH: ${{ github.ref_name }}
+          # 503 "high demand" biasanya sementara; 5 percobaan dengan backoff memberi waktu sekitar 2,5 menit.
+          GEMINI_RETRIES: 5
+        run: node scripts/gemini-scan.js --runs=1
+
+      - name: Unggah output analisis
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gemini-output-${{ github.run_id }}
+          path: gemini-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  # Jalur v2: satu run kondisi utama dengan llm-scan.js. Belum pernah dijalankan; lihat README dashboard.
+  # Pengaman berlapis: hanya workflow_dispatch, wajib konfirmasi eksplisit, dikunci satu run,
+  # satu run sekaligus lewat concurrency, timeout job, dan menolak branch objek uji eksperimen.
+  # Job analisis TIDAK menerbitkan apa pun. Penerbitan dipusatkan di job terbit-v2, sehingga
+  # mode gabungan tidak mungkin menerbitkan tiga kali: bukan karena ada kondisi yang menahannya,
+  # melainkan karena langkah terbitnya memang tidak ada di sini.
+  analisis-v2:
+    name: Analisis LLM v2 (deteksi dan verifikasi)
+    needs: [rencana, sonarcloud]
+    strategy:
+      fail-fast: false
+      matrix:
+        vendor: ${{ fromJSON(needs.rencana.outputs.vendors) }}
+    # llm-scan menolak run bila hash tree src/ pada revisi analisis Sonar berbeda dengan commit yang
+    # di-checkout, jadi job ini baru boleh jalan setelah analisis commit ini benar-benar ada di server.
+    # mode wajib sast-llm: sejak jalur bawaan menjadi v2, dispatch mode=sast tanpa menyentuh input
+    # jalur akan ikut memenuhi syarat lain di bawah, dan tanpa baris ini justru memanggil LLM.
+    # Gerbang kesiapan Sonar hanya berlaku untuk skenario yang MEMAKAI alert Sonar. Skenario C tidak
+    # mengirim satu pun alert ke model dan hasilnya tidak memuat alert, jadi menahannya karena
+    # analisis Sonar belum sepadan berarti menahan run karena data yang tidak ia pakai.
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.jalur == 'v2'
+      && needs.rencana.outputs.mode == 'sast-llm'
+      && (needs.rencana.outputs.skenario == 'C'
+      || (needs.sonarcloud.result == 'success' && needs.sonarcloud.outputs.analisis_siap == 'true'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Tolak tanpa konfirmasi eksplisit
+        if: inputs.konfirmasi_v2 != 'JALANKAN'
+        run: |
+          echo "Jalur v2 memanggil API berbayar. Isi input konfirmasi_v2 dengan JALANKAN untuk melanjutkan." >&2
+          exit 1
+
+      # Branch objek uji dikunci supaya data eksperimen tidak tertimpa run baru.
+      - name: Tolak branch objek uji eksperimen
+        if: github.ref_name == 'eksperimen/seeded'
+        run: |
+          echo "Branch eksperimen/seeded adalah arsip objek uji dan tidak boleh dipicu, demi integritas data eksperimen." >&2
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # actions/checkout memakai fetch-depth 1, jadi revisi analisis Sonar (yang berasal dari branch
+      # lain, mis. main) tidak ikut terbawa. llm-scan membutuhkannya untuk membandingkan hash tree
+      # src/, dan tanpa commit itu run ditolak dengan "Revisi analisis Sonar ... tidak ditemukan".
+      # Diambil satu commit saja, bukan seluruh riwayat: revisinya sudah diverifikasi job sonarcloud.
+      - name: Ambil revisi analisis Sonar ke dalam clone
+        env:
+          SONAR_REVISI: ${{ needs.sonarcloud.outputs.sonar_revisi }}
+          SONAR_TREE: ${{ needs.sonarcloud.outputs.sonar_tree_src }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SONAR_REVISI" ]; then
+            echo "Output sonar_revisi kosong; job sonarcloud tidak menetapkan revisi analisis." >&2
+            exit 1
+          fi
+          if ! git cat-file -e "$SONAR_REVISI^{commit}" 2>/dev/null; then
+            git fetch --depth=1 origin "$SONAR_REVISI"
+          fi
+          if ! git cat-file -e "$SONAR_REVISI^{commit}" 2>/dev/null; then
+            echo "Revisi analisis Sonar $SONAR_REVISI tidak bisa diambil ke clone ini." >&2
+            echo "Perbaikan: ganti fetch-depth job ini menjadi 0." >&2
+            exit 1
+          fi
+          # Pemeriksaan yang sama dengan llm-scan, dijalankan lebih awal supaya gagal sebelum npm ci
+          # dan sebelum langkah berbiaya. Pemeriksaan di llm-scan sendiri tidak diubah.
+          tree_analisis=$(git rev-parse "$SONAR_REVISI^{commit}:src")
+          tree_commit=$(git rev-parse HEAD:src)
+          echo "Revisi analisis $SONAR_REVISI tree src $tree_analisis; commit ini tree src $tree_commit"
+          if [ "$tree_analisis" != "$tree_commit" ]; then
+            echo "Hash tree src/ analisis Sonar berbeda dengan commit ini. Run ditolak sebelum panggilan LLM." >&2
+            exit 1
+          fi
+          if [ -n "$SONAR_TREE" ] && [ "$SONAR_TREE" != "$tree_analisis" ]; then
+            echo "Hash tree dari output job sonarcloud ($SONAR_TREE) berbeda dengan yang dihitung di sini." >&2
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependency
+        run: npm ci
+
+      # Daftar model hidup di dashboard/models.json; input vendor divalidasi terhadap berkas itu.
+      - name: Validasi vendor terhadap dashboard/models.json
+        env:
+          VENDOR: ${{ matrix.vendor }}
+        run: |
+          node -e '
+            const m = require("./dashboard/models.json").models.filter((x) => x.jalur === "v2");
+            const v = process.env.VENDOR;
+            const cocok = m.find((x) => x.vendor === v);
+            if (!cocok) { console.error(`Vendor ${v} tidak terdaftar untuk jalur v2 di dashboard/models.json`); process.exit(1); }
+            console.log(`Vendor ${v}, model ${cocok.id}, secret ${cocok.secret}, perkiraan biaya US$${cocok.biaya_perkiraan_usd}`);
+          '
+
+      - name: Catat analisis Sonar yang dipakai
+        env:
+          SONAR_BRANCH: ${{ needs.sonarcloud.outputs.sonar_branch }}
+          SONAR_REVISI: ${{ needs.sonarcloud.outputs.sonar_revisi }}
+          SONAR_TREE: ${{ needs.sonarcloud.outputs.sonar_tree_src }}
+          COMMIT_TREE: ${{ needs.sonarcloud.outputs.commit_tree_src }}
+        run: |
+          {
+            echo "### Analisis Sonar yang dipakai jalur v2"
+            echo ""
+            echo "| Butir | Nilai |"
+            echo "|---|---|"
+            echo "| Branch Sonar | $SONAR_BRANCH |"
+            echo "| Revisi analisis | $SONAR_REVISI |"
+            echo "| Hash tree src analisis | $SONAR_TREE |"
+            echo "| Hash tree src commit | $COMMIT_TREE |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch Sonar $SONAR_BRANCH, revisi $SONAR_REVISI, tree src $SONAR_TREE (commit $COMMIT_TREE)"
+
+      - name: Pastikan secret vendor tersedia
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          VENDOR: ${{ inputs.vendor_v2 }}
+        run: |
+          node -e '
+            const m = require("./dashboard/models.json").models.find((x) => x.jalur === "v2" && x.vendor === process.env.VENDOR);
+            if (!process.env[m.secret]) {
+              console.error(`Secret ${m.secret} belum ada di repo ini, jadi vendor ${process.env.VENDOR} tidak bisa dijalankan.`);
+              process.exit(1);
+            }
+          '
+
+      # Satu run, kondisi utama.
+      - name: Jalankan llm-scan (1 run, kondisi utama)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          # Branch Sonar yang kecocokannya sudah diverifikasi job sonarcloud lewat hash tree src/.
+          SONAR_BRANCH: ${{ needs.sonarcloud.outputs.sonar_branch }}
+          VENDOR: ${{ matrix.vendor }}
+          SKENARIO: ${{ needs.rencana.outputs.skenario }}
+        run: node scripts/llm-scan.js --vendor="$VENDOR" --kondisi=utama --runs=1 --objek=. --skenario="$SKENARIO"
+
+      # --nomor memakai nomor run GitHub, bukan indeks berkas run-N.json. Tanpa itu setiap run v2
+      # diterbitkan sebagai "run 1" ke <branch>/1.json dan saling menimpa.
+      - name: Susun results.json skema 2
+        env:
+          VENDOR: ${{ matrix.vendor }}
+        run: |
+          set -euo pipefail
+          folder=$(ls -dt "llm-output/v2/"*"-$VENDOR-utama" 2>/dev/null | head -1 || true)
+          if [ -z "$folder" ]; then
+            echo "Folder keluaran llm-scan untuk vendor $VENDOR tidak ditemukan." >&2
+            exit 1
+          fi
+          node scripts/merge-results.js merge --v2             --folder="$folder" --run=1 --nomor="$GITHUB_RUN_NUMBER" --id="$GITHUB_RUN_ID" --objek=.             --repo="$GITHUB_REPOSITORY" --out=results.json
+
+      # Satu artifact per vendor. Inilah satu-satunya keluaran job ini; penerbitannya urusan
+      # job terbit-v2.
+      - name: Unggah output v2
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: llm-v2-${{ matrix.vendor }}-${{ github.run_id }}
+          path: |
+            llm-output/v2/
+            results.json
+          retention-days: 14
+          if-no-files-found: warn
+
+
+  # Penerbitan dipusatkan di satu job supaya mode gabungan menerbitkan TEPAT SEKALI. Job ini juga
+  # yang menyatukan hasil tiga vendor dan, bila diminta, menyusun rekomendasi AI sesudahnya.
+  #
+  # always() dipakai dengan sengaja: fail-fast dimatikan di matriks analisis, jadi satu atau dua
+  # vendor yang gagal tidak boleh menghalangi penerbitan hasil vendor yang berhasil. Yang menahan
+  # job ini bukan keberhasilan seluruh matriks, melainkan ada atau tidaknya hasil yang bisa dipakai.
+  #
+  # Gerbang kesiapan Sonar TIDAK diulang di sini dengan sengaja. Syaratnya berbeda per skenario, dan
+  # menuliskannya dua kali berarti dua tempat yang bisa berbeda diam-diam. Yang diperiksa adalah
+  # apakah job analisis benar-benar berjalan: gerbangnya sudah mengandung seluruh syarat itu.
+  terbit-v2:
+    name: Gabung dan terbitkan hasil v2
+    needs: [rencana, sonarcloud, analisis-v2]
+    if: >-
+      always() && github.event_name == 'workflow_dispatch' && inputs.jalur == 'v2'
+      && needs.rencana.result == 'success' && needs.rencana.outputs.mode == 'sast-llm'
+      && needs['analisis-v2'].result != 'skipped' && needs['analisis-v2'].result != 'cancelled'
+      && inputs.konfirmasi_v2 == 'JALANKAN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    concurrency:
+      # Mengantre, bukan menolak: dua dispatch berurutan tetap menghasilkan dua run berbayar.
+      group: security-results
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependency
+        run: npm ci
+
+      - name: Unduh hasil tiap vendor
+        uses: actions/download-artifact@v8
+        with:
+          pattern: llm-v2-*-${{ github.run_id }}
+          path: hasil-vendor
+
+      # Mode satu model memakai results.json vendor itu apa adanya; mode gabungan menyatukan
+      # ketiganya. Keduanya berakhir di berkas yang sama, sehingga langkah sesudahnya tidak perlu
+      # tahu mode mana yang berjalan.
+      - name: Siapkan results.json
+        env:
+          GABUNGAN: ${{ needs.rencana.outputs.gabungan }}
+        run: |
+          set -euo pipefail
+          if [ "$GABUNGAN" = "true" ]; then
+            node scripts/llm-gabung.js --masuk=hasil-vendor --out=results.json \
+              --nomor="$GITHUB_RUN_NUMBER" --id="$GITHUB_RUN_ID" --repo="$GITHUB_REPOSITORY"
+          else
+            berkas=$(find hasil-vendor -name results.json | head -1)
+            if [ -z "$berkas" ]; then
+              echo "::error::Tidak ada results.json di artifact. Job analisis gagal sebelum sempat menyusunnya." >&2
+              exit 1
+            fi
+            cp "$berkas" results.json
+          fi
+          node -e '
+            const h = require("./results.json");
+            console.log(`Skema ${h.schema_version}, skenario ${h.run.skenario}, mode ${h.run.mode_model}, ${h.alerts.length} alert, ${h.findings.length} temuan`);
+          '
+
+      # Lapis 2 opt-in, dijalankan SESUDAH penggabungan supaya sarannya berpijak pada hasil akhir,
+      # bukan pada hasil satu vendor. Mode gabungan tidak punya vendor sendiri, jadi vendor
+      # penyusun rekomendasi diambil dari input terpisah; mode satu model memakai vendor runnya.
+      #
+      # Secret yang dipakai sama dengan langkah llm-scan; tidak ada secret baru dan tidak ada
+      # permission yang ditambahkan. Langkah ini tidak pernah menggagalkan job: skripnya keluar
+      # dengan 0 walau panggilannya gagal, karena menjatuhkan job berarti membuang hasil deteksi
+      # dan verifikasi yang sudah sah.
+      - name: Rekomendasi perbaikan AI (lapis 2)
+        if: inputs.rekomendasi_ai
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GABUNGAN: ${{ needs.rencana.outputs.gabungan }}
+          VENDOR_RUN: ${{ inputs.vendor_v2 }}
+          VENDOR_REKOM: ${{ inputs.vendor_rekomendasi }}
+        run: |
+          set -euo pipefail
+          if [ "$GABUNGAN" = "true" ]; then vendor="$VENDOR_REKOM"; else vendor="$VENDOR_RUN"; fi
+          echo "Vendor rekomendasi: $vendor"
+          node scripts/llm-remediasi.js --vendor="$vendor" --results=results.json
+
+      - name: Unggah hasil gabungan
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: hasil-v2-${{ github.run_id }}
+          path: results.json
+          retention-days: 14
+          if-no-files-found: warn
+
+      # Satu-satunya langkah yang menerbitkan di jalur v2. Job `hasil` hanya menulis skema 1.
+      - name: Terbitkan ke branch security-results
+        run: |
+          # set -e wajib: tanpa itu kegagalan `publish` (mis. index.json berisi skema lain) tertelan,
+          # `git commit` lalu gagal karena tidak ada perubahan, `git push` sukses tanpa membawa apa
+          # pun, dan langkah ini berakhir hijau padahal hasil run tidak pernah terbit.
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for percobaan in 1 2 3; do
+            rm -rf ../pub
+            git worktree prune
+            git branch -D security-results 2>/dev/null || true
+            if git fetch --depth=1 origin security-results 2>/dev/null; then
+              git worktree add -B security-results ../pub FETCH_HEAD
+            else
+              git worktree add --orphan -b security-results ../pub
+            fi
+            node scripts/merge-results.js publish --v2 --results=results.json --dir=../pub
+            git -C ../pub add -A
+            if git -C ../pub diff --cached --quiet; then
+              echo "::notice::Isi branch security-results sudah sama; tidak ada yang perlu diterbitkan."
+              exit 0
+            fi
+            git -C ../pub commit -q -m "hasil v2: run #$GITHUB_RUN_NUMBER ($GITHUB_REF_NAME)"
+            if git -C ../pub push origin security-results; then exit 0; fi
+            echo "Push gagal (percobaan $percobaan), coba lagi"
+            sleep 5
+          done
+          exit 1
+
+  hasil:
+    name: Gabung dan terbitkan hasil
+    needs: [rencana, build-test, sonarcloud, analisis]
+    # Seluruh job ini melayani skema 1: mengunduh artifact gemini-output, menggabungnya, lalu
+    # menerbitkannya. Di jalur v2 artifact itu tidak pernah dibuat (job analisis dilewati), sehingga
+    # unduhannya berakhir "Artifact not found", dan penerbitannya akan menjadi penerbitan KEDUA yang
+    # menimpa hasil skema 2 dari job terbit-v2. Karena itu job ini dilewati seluruhnya di jalur v2,
+    # dan terbit-v2 menjadi satu-satunya penerbit ke branch security-results di sana.
+    #
+    # Perkecualiannya mode sast, yaitu skenario A: jalur v2 pun tidak punya penerbit skema 2 karena
+    # tidak ada job LLM yang berjalan, jadi job inilah yang menerbitkan hasil SAST-nya.
+    if: >-
+      always() && (inputs.jalur != 'v2' || needs.rencana.outputs.mode == 'sast')
+      && (needs.rencana.outputs.mode == 'sast' || needs.rencana.outputs.mode == 'sast-llm')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Penerbit skema 1. Bersama terbit-v2, hanya kedua job inilah yang boleh menulis ke repo, dan
+    # keduanya tidak pernah berjalan di run yang sama.
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: security-results
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Unduh output analisis
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: gemini-output-${{ github.run_id }}
+          path: gemini-output
+
+      - name: Ambil waktu mulai run
+        id: waktu
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "mulai=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .run_started_at)" >> "$GITHUB_OUTPUT"
+
+      - name: Gabung temuan dan tulis Job Summary
+        env:
+          MODE: ${{ needs.rencana.outputs.mode }}
+          MODEL: ${{ inputs.model }}
+          RUN_LABEL: ${{ inputs.label }}
+          RUN_STARTED_AT: ${{ steps.waktu.outputs.mulai }}
+          JOB_BUILD_TEST: ${{ needs.build-test.result }}
+          JOB_SONARCLOUD: ${{ needs.sonarcloud.result }}
+          JOB_ANALISIS: ${{ needs.analisis.result }}
+        run: node scripts/merge-results.js merge --input=gemini-output --out=results.json --summary="$GITHUB_STEP_SUMMARY"
+
+      - name: Unggah results.json
+        uses: actions/upload-artifact@v7
+        with:
+          name: security-results-${{ github.run_id }}
+          path: results.json
+          retention-days: 14
+
+      - name: Terbitkan ke branch security-results
+        run: |
+          # set -e wajib: tanpa itu kegagalan `publish` (mis. index.json berisi skema lain) tertelan,
+          # `git commit` lalu gagal karena tidak ada perubahan, `git push` sukses tanpa membawa apa
+          # pun, dan langkah ini berakhir hijau padahal hasil run tidak pernah terbit.
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for percobaan in 1 2 3; do
+            rm -rf ../pub
+            git worktree prune
+            git branch -D security-results 2>/dev/null || true
+            if git fetch --depth=1 origin security-results 2>/dev/null; then
+              git worktree add -B security-results ../pub FETCH_HEAD
+            else
+              git worktree add --orphan -b security-results ../pub
+            fi
+            node scripts/merge-results.js publish --results=results.json --dir=../pub
+            git -C ../pub add -A
+            if git -C ../pub diff --cached --quiet; then
+              echo "::notice::Isi branch security-results sudah sama; tidak ada yang perlu diterbitkan."
+              exit 0
+            fi
+            git -C ../pub commit -q -m "hasil: run #$GITHUB_RUN_NUMBER ($GITHUB_REF_NAME)"
+            if git -C ../pub push origin security-results; then exit 0; fi
+            echo "Push gagal (percobaan $percobaan), coba lagi"
+            sleep 5
+          done
+          exit 1
