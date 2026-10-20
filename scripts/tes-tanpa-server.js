@@ -14,8 +14,10 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const TES = path.join(ROOT, 'tests');
 
-// Sama dengan pola di perintah bash AGENTS.md. Keduanya harus tetap sepadan; tes
-// tests/skenario.test.js memeriksanya.
+// Nama berkas tes yang memanggil server API lewat HTTP. Dicocokkan dengan pola, bukan daftar
+// tulis tangan, supaya berkas tes baru ikut terbawa tanpa ada yang perlu ingat memperbarui daftar.
+// Di repo TA pola ini dikunci sebuah tes terhadap perintah bash di AGENTS.md; tes itu tidak ikut
+// disalin ke repo demo, jadi di sini pola ini tidak punya penjaga otomatis.
 const BUTUH_SERVER = /api|cuti|khs|profil|list-query/;
 
 const berkas = fs.readdirSync(TES)

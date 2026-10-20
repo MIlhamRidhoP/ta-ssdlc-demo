@@ -59,12 +59,54 @@ Repo ini salinan sebagian. Yang sengaja ditinggalkan, beserta akibatnya:
   berkas itu) dan `dashboard/rekomendasi-cwe.json` (panduan umum per CWE, lapis 1).
 - **`SEEDED.md`** — ground truth kerentanan tidak ikut, jadi penilaian otomatis tidak bisa
   dijalankan di sini dan jalur v1 (`scripts/gemini-scan.js`) akan gagal. Pakai jalur v2.
-- **`hasil-eksperimen/`, `docs/`, `PRODUCT.md`** — data dan dokumen TA.
+- **`hasil-eksperimen/`, `PRODUCT.md`** — data dan dokumen TA.
+- **`docs/`** kecuali dua skema `results.json` (`docs/design/results-v2.schema.json` dan
+  `docs/design/results.schema.json`), yang ikut karena berkas tes membacanya.
 
-Akibatnya sebagian berkas tes gagal memuat modul (`dashboard/app.js`,
-`dashboard/fixtures/**`, `docs/design/results*.schema.json`). Tes itu **tidak diubah dan tidak
-dihapus**: ia tetap sahih di repo TA, dan di sini kegagalannya adalah soal lingkup salinan, bukan
-cacat. Lihat `AGENTS.md`.
+## Tes dashboard ada di repo TA
+
+Delapan berkas tes dari repo TA **tidak ikut disalin**, karena subjeknya tidak ada di sini: mereka
+memuat `dashboard/app.js` atau `dashboard/fixtures/**`, sedangkan dashboard tetap tinggal di repo
+TA. Tanpa berkasnya, tes itu hanya bisa gagal dengan `MODULE_NOT_FOUND` — kegagalan yang tidak
+mengatakan apa pun tentang kode di repo ini.
+
+| Berkas tes (ada di repo TA) | Subjeknya |
+|---|---|
+| `tests/tautan-github.test.js` | pembangun URL GitHub di `dashboard/app.js` |
+| `tests/urutan-run.test.js` | pengurut riwayat run di `dashboard/app.js` |
+| `tests/pipeline.test.js` | konstanta `PIPELINE` di `dashboard/app.js` versus workflow |
+| `tests/results-v2.test.js` | fixture `dashboard/fixtures/v2/**` terhadap skema |
+| `tests/remediasi.test.js` | rekomendasi lapis 2 atas fixture dashboard |
+| `tests/publikasi.test.js` | penerbitan index, atas fixture dashboard |
+| `tests/skenario.test.js` | sumbu skenario, atas fixture dashboard |
+| `tests/rekomendasi-cwe.test.js` | pemetaan CWE terhadap fixture dashboard dan `dashboard/app.js` |
+
+Berkas itu **tidak diubah, tidak dilemahkan, dan tidak ditulis ulang di sini** — hanya tidak
+dibawa. Semuanya tetap utuh dan tetap dijalankan di repo TA, tempat dashboard dan fixture-nya
+berada. Jalankan di sana untuk menguji dashboard.
+
+Khusus `tests/rekomendasi-cwe.test.js`: subjek utamanya, `dashboard/rekomendasi-cwe.json`,
+sebenarnya **ada** di repo ini karena pipeline membacanya. Enam dari delapan pemeriksaannya lulus
+di sini; dua sisanya butuh fixture dashboard. Berkasnya tetap tidak dibawa supaya tidak ada tes
+merah yang tidak bermakna, jadi validasi berkas pemetaan itu hidup di repo TA.
+
+## Tes API sengaja gagal
+
+Lima berkas tes API **tetap ada dan memang gagal**, dan itulah gunanya repo ini:
+
+`tests/api.test.js`, `tests/cuti.test.js`, `tests/profil.test.js`, `tests/khs.test.js`,
+`tests/list-query.test.js`
+
+Tes itu menegaskan perilaku yang aman — otorisasi ditegakkan, input diparameterisasi, field
+sensitif tidak bocor — sedangkan `src/` sengaja tidak aman. Kegagalannya adalah **buktinya objek
+uji ini benar-benar berisi celah**, bukan cacat yang perlu ditambal. **Jangan diperbaiki, jangan
+dilemahkan, jangan dihapus.**
+
+Contohnya: `src/models/mahasiswaModel.js` menginterpolasi pola pencarian langsung ke SQL
+(`WHERE ('${pola}' IS NULL OR ...)`) alih-alih memparameterisasinya. Akibat sampingannya, `GET
+/api/mahasiswa` tanpa `?q=` menghasilkan literal `'null'`, dan `'null' IS NULL` bernilai false di
+Postgres, sehingga list admin mengembalikan nol baris. Itu menjatuhkan `before`-hook di
+`api`, `cuti`, dan `profil` sekaligus.
 
 ## Penyesuaian terhadap repo TA
 
@@ -84,10 +126,11 @@ Hanya identitas repo dan nama container yang berbeda; perilaku pipeline tidak di
 
 ```bash
 npm ci
-npm run test:tanpa-server
+npm run test:tanpa-server      # harus hijau seluruhnya
 ```
 
-Tes API butuh Postgres dan server yang hidup:
+Tes API butuh Postgres dan server yang hidup, dan **memang gagal** — lihat "Tes API sengaja
+gagal" di atas:
 
 ```bash
 cp .env.example .env                       # lalu isi nilainya sendiri
@@ -98,10 +141,8 @@ npm test
 docker compose down                        # jangan ditinggalkan hidup
 ```
 
-**Ada tes yang memang gagal, dan itu bukti framework ini ada gunanya.** Objek uji sengaja tidak
-aman, sedangkan tes API menegaskan perilaku yang aman. Jangan diperbaiki, jangan dilemahkan,
-jangan dihapus. Sebab kegagalan yang kedua — berkas dashboard dan skema yang tidak ikut disalin —
-dijelaskan di bagian "Yang tidak ikut disalin".
+Dua hasil itu dibaca berbeda: `test:tanpa-server` merah berarti ada yang rusak, sedangkan tes API
+merah adalah keadaan yang diharapkan.
 
 ## Langkah setup yang menjadi tanggung jawab pemilik repo
 

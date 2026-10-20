@@ -54,7 +54,7 @@ Repo ini salinan sebagian repo TA. Yang sengaja ditinggalkan, beserta akibatnya:
 |---|---|
 | `dashboard/` (kecuali dua berkas data di bawah) | Tidak ada antarmuka developer di repo ini. Dashboard di repo TA membaca hasil repo ini lewat `dashboard/projects.json` |
 | `SEEDED.md` | Ground truth kerentanan tidak ada, jadi **penilaian tidak bisa dijalankan** dan **jalur v1 (`scripts/gemini-scan.js`) gagal**. Pakai jalur v2 |
-| `hasil-eksperimen/`, `docs/`, `PRODUCT.md` | Dokumen dan data TA tidak ikut |
+| `hasil-eksperimen/`, `PRODUCT.md`, dan `docs/` selain dua skema di bawah | Dokumen dan data TA tidak ikut |
 
 Dua berkas `dashboard/` tetap ada karena **pipeline membacanya**, bukan karena dashboardnya:
 
@@ -63,8 +63,16 @@ Dua berkas `dashboard/` tetap ada karena **pipeline membacanya**, bukan karena d
 - `dashboard/rekomendasi-cwe.json` — panduan umum per CWE (lapis 1), dibaca
   `scripts/llm/remediasi.js`.
 
-Karena `dashboard/app.js` dan `dashboard/fixtures/**` tidak ada, sebagian berkas tes gagal dengan
-`MODULE_NOT_FOUND`. Itu konsekuensi lingkup repo ini, bukan cacat. Daftarnya ada di `README.md`.
+Dari `docs/` hanya dua skema `results.json` yang ikut, karena berkas tes dan
+`scripts/validasi-skema.js` membacanya: `docs/design/results-v2.schema.json` (skema 2, dipakai
+`tests/gabung.test.js`) dan `docs/design/results.schema.json` (skema 1, kini tanpa pemakai di repo
+ini; disalin supaya skema kedua jalur tetap terdokumentasi berdampingan).
+
+**Berkas tes yang subjeknya tidak ada di sini sudah dikeluarkan, bukan dilemahkan.** Delapan berkas
+tes di repo TA memuat `dashboard/app.js` atau `dashboard/fixtures/**`, yang tidak ikut disalin;
+berkas itu tidak dibawa ke repo demo supaya `npm run test:tanpa-server` di sini hijau dan
+kegagalan yang tersisa hanya yang bermakna. Daftarnya ada di `README.md`. Tes itu tetap utuh dan
+tetap dijalankan di repo TA; **jangan menulis ulang versi tiruannya di sini.**
 
 ## Cara memverifikasi
 
@@ -72,20 +80,22 @@ Karena `dashboard/app.js` dan `dashboard/fixtures/**` tidak ada, sebagian berkas
 npm run test:tanpa-server                           # tes yang tidak butuh server
 cd prompts/v2 && sha256sum -c HASHES.txt            # harus 8/8 OK
 cd prompts/remediasi-v1 && sha256sum -c HASHES.txt  # harus 3/3 OK
-node scripts/validasi-skema.js                      # fixture v2 terhadap skema
 ```
 
 `sha256sum -c` hanya separuh aturannya; separuh lainnya, yaitu tidak ada berkas di luar daftar,
 diperiksa `tests/kunci-prompt.test.js`. Lihat batas keras nomor 5.
 
-**Tes memang ada yang gagal di repo ini, dan itu disengaja.** Dua sebabnya berbeda dan jangan
-dicampur:
+`scripts/validasi-skema.js` adalah modul (`module.exports = { validasiSkema }`), bukan CLI.
+Menjalankannya langsung keluar 0 tanpa memeriksa apa pun; ia dipakai dari berkas tes.
 
-1. **Kode objek uji berisi celah.** Tes API menegaskan perilaku yang aman, sedangkan `src/`
-   sengaja tidak aman. Kegagalan ini adalah buktinya bekerja. **Jangan diperbaiki, jangan dihapus,
-   jangan dilemahkan.**
-2. **Dashboard tidak ikut disalin.** Berkas tes yang memuat `dashboard/app.js` atau
-   `dashboard/fixtures/**` gagal memuat modul. Juga jangan diubah: tes itu tetap sahih di repo TA.
+**`npm run test:tanpa-server` harus hijau seluruhnya.** Kalau ada yang merah, itu cacat yang perlu
+dikejar, bukan keadaan normal.
+
+**Tes API memang gagal, dan itu disengaja.** Tes API menegaskan perilaku yang aman, sedangkan
+`src/` sengaja tidak aman, jadi kegagalannya justru bukti objek uji ini berisi celah seperti
+seharusnya. **Jangan diperbaiki, jangan dihapus, jangan dilemahkan.** Berkas yang dimaksud:
+`tests/api.test.js`, `tests/cuti.test.js`, `tests/profil.test.js`, `tests/khs.test.js`, dan
+`tests/list-query.test.js`.
 
 Untuk menjalankan tes API dibutuhkan Postgres dan server:
 
