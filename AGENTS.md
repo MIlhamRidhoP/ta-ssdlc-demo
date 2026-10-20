@@ -128,6 +128,22 @@ docker compose down
   membuat keduanya menyimpang diam-diam. Kalau ada bug framework yang ketemu di sini, laporkan
   supaya diperbaiki di repo TA lalu disalin ulang.
 - Perkakas sementara, skrip tambalan, dan screenshot **tidak masuk repo**.
+- **Jangan memakai perintah cermin atau hapus massal di luar folder sementara milik sendiri.**
+  Termasuk `robocopy /MIR`, `rm -rf`, `Remove-Item -Recurse -Force`, dan `git clean -xfd`. Perintah
+  seperti ini menghapus menurut isi folder, bukan menurut apa yang Anda maksud, dan ia menembus
+  salinan maupun tautan tanpa bertanya. Pernah terjadi di repo TA: `node_modules` terhapus sebagian
+  oleh `robocopy /MIR` yang dipakai membersihkan worktree sementara, karena `ln -s` di Git Bash
+  Windows diam-diam **menyalin** folder itu alih-alih menautkannya, sehingga cerminnya ikut
+  menyasar isi aslinya. Akibatnya lima berkas tes gagal dengan `Cannot find module` dan sempat
+  terbaca sebagai cacat kode, bukan sebagai lingkungan yang rusak. Hapus dengan menyebut sasaran
+  yang spesifik, dan kalau folder yang dibersihkan mungkin berisi salinan atau tautan ke sesuatu
+  yang masih dipakai, periksa dulu isinya sebelum menghapus.
+
+  Di repo ini risikonya lebih besar dari sekadar `node_modules`: `src/` adalah objek uji yang
+  terikat hash tree `ef5ff340dcb93e8153e52262bb79b64ea031e3cd`, dan satu cermin yang menyasar ke
+  situ memutus pengikatnya dengan repo TA tanpa bunyi. Untuk tautan di Windows pakai junction
+  (`New-Item -ItemType Junction`), bukan `ln -s`, dan lepaskan dengan `cmd /c rmdir` yang hanya
+  menghapus tautannya, bukan isinya.
 
 ## Peta berkas
 
