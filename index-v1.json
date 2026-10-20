@@ -1,7 +1,28 @@
 {
   "schema_version": 1,
-  "diperbarui": "2026-10-20T14:53:49.004Z",
+  "diperbarui": "2026-10-20T16:36:06.110Z",
   "runs": [
+    {
+      "id": 39458590430,
+      "nomor": 5,
+      "branch": "main",
+      "commit": "c70cab583f753d4483eb31f4e3662036d3da42d4",
+      "label": "sd-mvgwkyuxsp6t",
+      "mode": "sast",
+      "model": null,
+      "mulai": "2026-10-20T16:34:09Z",
+      "selesai": "2026-10-20T16:36:06.110Z",
+      "durasi_detik": 117,
+      "path": "main/5.json",
+      "gemini": "dilewati",
+      "jumlah": {
+        "total": 5,
+        "kritis": 4,
+        "tinggi": 0,
+        "sedang": 1,
+        "rendah": 0
+      }
+    },
     {
       "id": 39443142114,
       "nomor": 3,
