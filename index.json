@@ -1,7 +1,32 @@
 {
   "schema_version": 2,
-  "diperbarui": "2026-10-21T15:54:49.661Z",
+  "diperbarui": "2026-10-21T16:00:37.511Z",
   "runs": [
+    {
+      "id": 39630453154,
+      "nomor": 12,
+      "branch": "main",
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "vendor": "anthropic",
+      "model_diminta": "claude-sonnet-5-5",
+      "model_menjawab": "claude-sonnet-5-5",
+      "kondisi": "utama",
+      "mulai": "2026-10-21T15:59:35.541Z",
+      "selesai": "2026-10-21T16:00:37.511Z",
+      "durasi_detik": 62,
+      "biaya_usd": 0.370812,
+      "path": "main/12.json",
+      "status": "ok",
+      "jumlah": {
+        "alert": 5,
+        "temuan": 14,
+        "true_positive": 2,
+        "false_positive": 3,
+        "uncertain": 0,
+        "tidak_sepakat": 0,
+        "tanpa_putusan": 0
+      }
+    },
     {
       "id": 39629276663,
       "nomor": 11,
