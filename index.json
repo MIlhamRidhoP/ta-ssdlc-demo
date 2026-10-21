@@ -1,7 +1,32 @@
 {
   "schema_version": 2,
-  "diperbarui": "2026-10-21T06:02:16.794Z",
+  "diperbarui": "2026-10-21T06:06:02.509Z",
   "runs": [
+    {
+      "id": 39553198635,
+      "nomor": 10,
+      "branch": "main",
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "vendor": null,
+      "model_diminta": null,
+      "model_menjawab": null,
+      "kondisi": "utama",
+      "mulai": "2026-10-21T06:05:59.633Z",
+      "selesai": "2026-10-21T06:06:02.509Z",
+      "durasi_detik": 3,
+      "biaya_usd": 0,
+      "path": "main/10.json",
+      "status": "ok",
+      "jumlah": {
+        "alert": 5,
+        "temuan": 0,
+        "true_positive": 0,
+        "false_positive": 0,
+        "uncertain": 0,
+        "tidak_sepakat": 0,
+        "tanpa_putusan": 5
+      }
+    },
     {
       "id": 39552805441,
       "nomor": 9,
