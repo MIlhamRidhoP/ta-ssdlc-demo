@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39633821006,
+    "nomor": 15,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": "google",
+    "model_diminta": "gemini-3.1-pro-preview",
+    "model_menjawab": "gemini-3.1-pro-preview",
+    "kondisi": "utama",
+    "skenario": "C",
+    "mode_model": "tunggal",
+    "mulai": "2026-10-21T16:21:31.189Z",
+    "selesai": "2026-10-21T16:21:57.382Z",
+    "durasi_detik": 26,
+    "objek_uji": {
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "bersih": true
+    },
+    "hash_prompt": {
+      "system": "bb687afc7f13696bf922240f0923c7266aa3f28fd645971bf9d392733e19c7fa",
+      "user_deteksi": "568d6cbaa989f393a995306376ca6d507884265226f414338fb0093e9990906c"
+    },
+    "sumber_sonar": null,
+    "analisis_sonar": {
+      "tanggal": null,
+      "revisi": null,
+      "tree_src": null
+    },
+    "sonar_beku": null,
+    "biaya_usd": 0.10534,
+    "status_panggilan": {
+      "total": 1,
+      "ok": 1,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0
+    },
+    "pipeline": null
+  },
+  "alerts": [],
+  "findings": []
+}
