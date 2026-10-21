@@ -1,7 +1,32 @@
 {
   "schema_version": 2,
-  "diperbarui": "2026-10-21T16:24:43.461Z",
+  "diperbarui": "2026-10-21T16:32:55.278Z",
   "runs": [
+    {
+      "id": 39634880209,
+      "nomor": 17,
+      "branch": "main",
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "vendor": "openai",
+      "model_diminta": "gpt-6.1-sol",
+      "model_menjawab": "gpt-6.1-sol",
+      "kondisi": "utama",
+      "mulai": "2026-10-21T16:28:35.936Z",
+      "selesai": "2026-10-21T16:32:55.278Z",
+      "durasi_detik": 259,
+      "biaya_usd": 0.119137,
+      "path": "main/17.json",
+      "status": "ok",
+      "jumlah": {
+        "alert": 0,
+        "temuan": 14,
+        "true_positive": 0,
+        "false_positive": 0,
+        "uncertain": 0,
+        "tidak_sepakat": 0,
+        "tanpa_putusan": 0
+      }
+    },
     {
       "id": 39634263275,
       "nomor": 16,
