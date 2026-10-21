@@ -1,0 +1,149 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39629276663,
+    "nomor": 11,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": "google",
+    "model_diminta": "gemini-3.1-pro-preview",
+    "model_menjawab": "gemini-3.1-pro-preview",
+    "kondisi": "utama",
+    "skenario": "B",
+    "mode_model": "tunggal",
+    "mulai": "2026-10-21T15:51:51.002Z",
+    "selesai": "2026-10-21T15:54:49.661Z",
+    "durasi_detik": 179,
+    "objek_uji": {
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "bersih": true
+    },
+    "hash_prompt": {
+      "system": "bb687afc7f13696bf922240f0923c7266aa3f28fd645971bf9d392733e19c7fa",
+      "user_deteksi": "568d6cbaa989f393a995306376ca6d507884265226f414338fb0093e9990906c"
+    },
+    "sumber_sonar": "api",
+    "analisis_sonar": {
+      "tanggal": "2026-10-21T15:50:45+0000",
+      "revisi": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "sonar_beku": null,
+    "biaya_usd": 0.458128,
+    "status_panggilan": {
+      "total": 6,
+      "ok": 6,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0
+    },
+    "pipeline": null
+  },
+  "alerts": [
+    {
+      "id": "SONAR-01",
+      "rule": "javascript:S5122",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/app.js",
+      "baris": 10,
+      "cwe": [
+        "CWE-346",
+        "CWE-942"
+      ],
+      "pesan": "Make sure that enabling CORS is safe here.",
+      "severity_sonar": "MAJOR",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Penggunaan `app.use(cors())` pada `src/app.js` secara default memang mengizinkan semua origin (`*`). Namun, aplikasi ini melakukan autentikasi secara eksklusif menggunakan token Bearer pada header `Authorization` (lihat `src/middleware/auth.js`) dan tidak menggunakan mekanisme cookie. Karena browser tidak mengirimkan token ini secara otomatis pada permintaan lintas domain, kebijakan CORS yang permisif tersebut tidak menimbulkan kerentanan pencurian data atau CSRF.",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-02",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Kondisi `if (!semester)` pada baris 160 hanya akan dieksekusi jika variabel `semester` bernilai string kosong (`\"\"`). Payload XSS berbahaya tidak akan lolos pengecekan ini dan akan diarahkan ke pemanggilan fungsi `halamanKhs`, di mana input tersebut secara aman disanitasi menggunakan `escapeHtml()`.",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-03",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 170,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Input req.query.semester pada fungsi khs divalidasi secara ketat sebagai string dan disanitasi menggunakan fungsi kustom escapeHtml sebelum dirender di dalam halamanKhs. Fungsi pada src/utils/html.js tersebut secara efektif mengonversi karakter berbahaya menjadi entitas HTML untuk mencegah Reflected XSS (CWE-79). Alat analisis statis kemungkinan besar memunculkan alert ini karena tidak mengenali penggunaan fungsi sanitasi kustom.",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-04",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/cutiModel.js",
+      "baris": 93,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Input `sort` dan `order` pada fungsi `listAdmin` di `cutiModel.js` memang digabungkan langsung ke dalam string SQL. Namun, sebelum fungsi model tersebut dipanggil, `cutiController.js` memanggil utilitas `listQuery` yang melakukan pengecekan allowlist ketat terhadap `req.query.sort` dan `req.query.order`. Jika nilai tidak valid, `listQuery` akan melempar exception sehingga eksekusi terhenti, yang secara efektif mencegah SQL Injection (CWE-89).",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-05",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/nilaiModel.js",
+      "baris": 124,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "true_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Fungsi `publishedBySemester` pada `src/models/nilaiModel.js` menggabungkan parameter `semester` secara langsung ke dalam query SQL menggunakan string literal. Parameter ini berasal dari `req.query.semester` pada endpoint `khs` di `src/controllers/nilaiController.js` yang hanya divalidasi sebagai string tidak kosong tanpa pemeriksaan format `SEMESTER_RE`, sehingga membuka celah SQL Injection (CWE-89).",
+      "tanda": []
+    }
+  ],
+  "findings": []
+}
