@@ -1,0 +1,1144 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39549099311,
+    "nomor": 8,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": "gabungan",
+    "model_diminta": null,
+    "model_menjawab": null,
+    "kondisi": "utama",
+    "skenario": "B",
+    "mode_model": "gabungan",
+    "mulai": "2026-10-21T05:23:05.441Z",
+    "selesai": "2026-10-21T05:30:06.824Z",
+    "durasi_detik": 421,
+    "objek_uji": {
+      "commit": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "bersih": true
+    },
+    "hash_prompt": {
+      "system": "bb687afc7f13696bf922240f0923c7266aa3f28fd645971bf9d392733e19c7fa",
+      "user_deteksi": "568d6cbaa989f393a995306376ca6d507884265226f414338fb0093e9990906c"
+    },
+    "sumber_sonar": "api",
+    "analisis_sonar": {
+      "tanggal": "2026-10-21T05:22:01+0000",
+      "revisi": "88daa2b21a35d4fe0f2f537aeec7f2e98f779e09",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "sonar_beku": null,
+    "biaya_usd": 1.63121,
+    "status_panggilan": {
+      "total": 18,
+      "ok": 18,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0
+    },
+    "pipeline": null,
+    "vendor_dipakai": [
+      "google",
+      "anthropic",
+      "openai"
+    ],
+    "vendor_gagal": [],
+    "per_vendor": {
+      "google": {
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "biaya_usd": 0.960924,
+        "durasi_detik": 421,
+        "status_panggilan": {
+          "total": 6,
+          "ok": 6,
+          "refusal": 0,
+          "truncated": 0,
+          "error": 0,
+          "parse_gagal": 0
+        },
+        "jumlah_temuan": 7
+      },
+      "anthropic": {
+        "model_diminta": "claude-sonnet-5-5",
+        "model_menjawab": "claude-sonnet-5-5",
+        "biaya_usd": 0.368182,
+        "durasi_detik": 62,
+        "status_panggilan": {
+          "total": 6,
+          "ok": 6,
+          "refusal": 0,
+          "truncated": 0,
+          "error": 0,
+          "parse_gagal": 0
+        },
+        "jumlah_temuan": 14
+      },
+      "openai": {
+        "model_diminta": "gpt-6.1-sol",
+        "model_menjawab": "gpt-6.1-sol",
+        "biaya_usd": 0.302104,
+        "durasi_detik": 308,
+        "status_panggilan": {
+          "total": 6,
+          "ok": 6,
+          "refusal": 0,
+          "truncated": 0,
+          "error": 0,
+          "parse_gagal": 0
+        },
+        "jumlah_temuan": 13
+      }
+    },
+    "remediasi": {
+      "versi_prompt": "remediasi-v1",
+      "hash_prompt": {
+        "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+        "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+        "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+      },
+      "vendor": "anthropic",
+      "model_diminta": "claude-sonnet-5-5",
+      "model_menjawab": null,
+      "item_dikirim": 21,
+      "item_terisi": 0,
+      "tidak_konsisten": 0,
+      "usage": null,
+      "biaya_usd": null,
+      "status_panggilan": {
+        "total": 1,
+        "ok": 0,
+        "refusal": 0,
+        "truncated": 0,
+        "error": 1,
+        "parse_gagal": 0
+      },
+      "waktu_mulai": null,
+      "waktu_selesai": null,
+      "durasi_ms": null,
+      "status": "gagal",
+      "alasan": "Panggilan remediasi gagal: Cannot read properties of undefined (reading '0')"
+    }
+  },
+  "alerts": [
+    {
+      "id": "SONAR-01",
+      "rule": "javascript:S5122",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/app.js",
+      "baris": 10,
+      "cwe": [
+        "CWE-346",
+        "CWE-942"
+      ],
+      "pesan": "Make sure that enabling CORS is safe here.",
+      "severity_sonar": "MAJOR",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "suara-terbanyak",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": [],
+      "putusan_gabungan": "false_positive",
+      "suara": 2,
+      "putusan_vendor": {
+        "google": "true_positive",
+        "anthropic": "false_positive",
+        "openai": "false_positive"
+      },
+      "keyakinan_vendor": {
+        "google": "high",
+        "anthropic": "high",
+        "openai": "high"
+      },
+      "alasan_vendor": {
+        "google": "Pemanggilan cors() tanpa opsi pada src/app.js secara default akan mengatur header Access-Control-Allow-Origin: * (CWE-942). Walaupun eksploitasi lintas origin secara otomatis dicegah oleh penggunaan otentikasi JWT (Bearer token) alih-alih cookie, mengizinkan akses dari semua domain merupakan konfigurasi yang terlalu permisif untuk sistem informasi akademik. Peringatan ini valid karena ketiadaan pembatasan origin berisiko melanggar prinsip keamanan least privilege.",
+        "anthropic": "`app.use(cors())` di src/app.js:10 memang memakai konfigurasi bawaan (`Access-Control-Allow-Origin: *` tanpa `credentials`). Namun `authenticate` di src/middleware/auth.js hanya menerima token JWT lewat header `Authorization: Bearer`, tidak ada cookie atau sesi yang dikirim otomatis oleh browser. Karena itu situs asing tidak bisa memakai kredensial korban untuk membaca data atau memicu aksi (CWE-346/CWE-942 tidak dapat dieksploitasi), dan tidak ada indikasi API ini dipercaya berdasarkan jaringan internal. Alert ini hanya mengingatkan konfigurasi permisif tanpa dampak keamanan nyata.",
+        "openai": "Pemanggilan cors() di src/app.js:10 mengizinkan semua origin, tetapi tidak mengaktifkan credentials. Endpoint data mahasiswa dilindungi authenticate yang mensyaratkan JWT valid melalui header Authorization: Bearer; authController.login mengembalikan token dalam JSON, bukan cookie yang dikirim otomatis oleh browser. Karena origin asing tidak otomatis memperoleh JWT korban, konfigurasi CORS ini tidak memungkinkan pembacaan data korban tanpa otorisasi pada kode yang tersedia."
+      }
+    },
+    {
+      "id": "SONAR-02",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "suara-terbanyak",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": [],
+      "putusan_gabungan": "false_positive",
+      "suara": 3,
+      "putusan_vendor": {
+        "google": "false_positive",
+        "anthropic": "false_positive",
+        "openai": "false_positive"
+      },
+      "keyakinan_vendor": {
+        "google": "high",
+        "anthropic": "high",
+        "openai": "high"
+      },
+      "alasan_vendor": {
+        "google": "Pada baris 160, variabel `semester` dipastikan bernilai string kosong (`\"\"`) karena tipe datanya dibatasi menjadi string dan blok tersebut hanya dieksekusi jika kondisi falsy (`!semester`) terpenuhi. Input berbahaya dari pengguna tidak akan pernah direfleksikan ke dalam respons HTML, sehingga peringatan CWE-79 ini adalah false positive dari analisis statis yang gagal memahami konteks kondisional.",
+        "anthropic": "Di src/controllers/nilaiController.js baris 160, query `semester` dari req.query dimasukkan langsung ke template HTML `<p>Semester \"${semester}\" tidak dikenali</p>` tanpa escapeHtml. Tidak ada validasi SEMESTER_RE di jalur ini, dan cabang tersebut hanya dipicu saat semester kosong (`!semester`), sehingga string kosong tidak bisa membawa payload, tetapi nilai non-string juga menjadi ''. Karena `semester` hanya bernilai '' pada cabang itu, tidak ada input pengguna yang benar-benar tercermin di respons (CWE-79 tidak dapat dieksploitasi).",
+        "openai": "Dalam fungsi khs di src/controllers/nilaiController.js, semester diambil dari req.query.semester hanya jika bertipe string; selain itu nilainya menjadi string kosong. Respons HTML pada baris 160 hanya dijalankan ketika !semester, sehingga nilai yang diinterpolasikan selalu string kosong dan payload HTML/JavaScript tidak dapat mencapai lokasi tersebut."
+      }
+    },
+    {
+      "id": "SONAR-03",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 170,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "true_positive",
+      "putusan_asal": "suara-terbanyak",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": [],
+      "putusan_gabungan": "true_positive",
+      "suara": 2,
+      "putusan_vendor": {
+        "google": "true_positive",
+        "anthropic": "true_positive",
+        "openai": "false_positive"
+      },
+      "keyakinan_vendor": {
+        "google": "high",
+        "anthropic": "medium",
+        "openai": "high"
+      },
+      "alasan_vendor": {
+        "google": "Parameter `semester` dari `req.query` tidak divalidasi dan memicu SQL Injection pada fungsi `model.publishedBySemester`. Melalui eksploitasi `UNION SELECT`, penyerang dapat memanipulasi data balikan pada variabel `items`. Pada fungsi `halamanKhs` yang dipanggil di baris 170, field `i.nama` dari `items` dicetak ke respons HTML tanpa melewati proses sanitasi `escapeHtml`, sehingga memungkinkan eksekusi Reflected XSS.",
+        "anthropic": "Di halamanKhs (src/controllers/nilaiController.js) kolom `${i.nama}` dimasukkan ke HTML tanpa escapeHtml, lalu dikirim di baris 170. Parameter `semester` sendiri di-escape di template, tetapi `model.publishedBySemester` menyisipkan `semester` mentah ke SQL, sehingga query string dapat mengubah isi `items` (misalnya lewat UNION). Dengan begitu input pengguna bisa sampai ke sink HTML yang tidak di-escape (CWE-79). Eksploitasi terhadap korban lain sulit karena endpoint butuh header Authorization Bearer, jadi tingkat keyakinan hanya medium.",
+        "openai": "Pada fungsi khs di src/controllers/nilaiController.js, nilai req.query.semester diteruskan ke halamanKhs, tetapi seluruh penyisipan semester ke HTML menggunakan escapeHtml. Respons kesalahan hanya dijalankan ketika semester bernilai string kosong, sehingga tidak memantulkan payload pengguna. Karena itu, sink pada baris 170 tidak menghasilkan reflected XSS melalui parameter semester seperti yang dilaporkan."
+      }
+    },
+    {
+      "id": "SONAR-04",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/cutiModel.js",
+      "baris": 93,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "suara-terbanyak",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": [],
+      "putusan_gabungan": "false_positive",
+      "suara": 3,
+      "putusan_vendor": {
+        "google": "false_positive",
+        "anthropic": "false_positive",
+        "openai": "false_positive"
+      },
+      "keyakinan_vendor": {
+        "google": "high",
+        "anthropic": "high",
+        "openai": "high"
+      },
+      "alasan_vendor": {
+        "google": "Kelemahan SQL Injection (CWE-89) tidak dapat dieksploitasi karena parameter sort dan order divalidasi secara ketat menggunakan allowlist oleh fungsi listQuery di cutiController.js sebelum diteruskan ke model. Jika input dari pengguna tidak sesuai dengan daftar kolom di model.SORT atau bukan 'asc'/'desc', fungsi akan melempar error dan menghentikan eksekusi. Oleh karena itu, interpolasi string langsung pada query di cutiModel.js dijamin aman dari injeksi.",
+        "anthropic": "Satu-satunya nilai yang disisipkan langsung ke SQL di cutiModel.listAdmin adalah `sort` dan `order` pada `ORDER BY ${sort} ${order}`, sedangkan `pola`, `limit`, `offset`, dan KEY memakai placeholder terparameter. Di cutiController.listAdmin, `listQuery` dijalankan lebih dulu pada `req.query` yang sama dan melempar AppError 400 kalau `sort` bukan string atau bukan key di `model.SORT` (lewat `Object.hasOwn`), serta kalau `order` bukan tepat 'asc' atau 'desc'. Jadi `sort` hanya bisa salah satu dari created_at, semester, status, kategori, nim, nama, dan `order` hanya asc atau desc, sehingga tidak ada jalur SQL injection (CWE-89) yang bisa dicapai pengguna.",
+        "openai": "Fungsi cutiController.listAdmin memanggil listQuery(req.query, ...) sebelum meneruskan sort dan order ke cutiModel.listAdmin. listQuery membatasi sort pada kunci model.SORT dan order hanya pada 'asc' atau 'desc', sehingga interpolasi keduanya dalam ORDER BY tidak memungkinkan SQL Injection. Nilai pola, limit, offset, dan KEY diteruskan sebagai parameter query, bukan digabungkan ke teks SQL."
+      }
+    },
+    {
+      "id": "SONAR-05",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/nilaiModel.js",
+      "baris": 124,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "true_positive",
+      "putusan_asal": "suara-terbanyak",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": [],
+      "putusan_gabungan": "true_positive",
+      "suara": 3,
+      "putusan_vendor": {
+        "google": "true_positive",
+        "anthropic": "true_positive",
+        "openai": "true_positive"
+      },
+      "keyakinan_vendor": {
+        "google": "high",
+        "anthropic": "high",
+        "openai": "high"
+      },
+      "alasan_vendor": {
+        "google": "Parameter semester yang berasal dari req.query.semester pada fungsi khs di nilaiController.js diteruskan tanpa validasi format ke fungsi publishedBySemester di nilaiModel.js. Di dalam fungsi tersebut, nilai semester langsung disisipkan ke dalam query SQL menggunakan string interpolation ('${semester}') alih-alih parameterized query. Hal ini memungkinkan pengguna (mahasiswa) untuk mengeksploitasi celah SQL Injection (CWE-89).",
+        "anthropic": "Di src/models/nilaiModel.js, fungsi publishedBySemester menyisipkan `semester` langsung ke SQL lewat template string (`ks.semester = '${semester}'`). Di nilaiController.khs, `semester` hanya dicek bertipe string dan tidak kosong, tanpa validasi SEMESTER_RE, sehingga query string `semester` dari mahasiswa terautentikasi bisa berisi tanda kutip dan payload SQL. Endpoint GET /api/nilai/me/khs hanya dilindungi authorize('mahasiswa') dan requireConsent, jadi bisa dijangkau pengguna biasa dan tidak ada parameterisasi yang mencegahnya.",
+        "openai": "Fungsi khs di src/controllers/nilaiController.js menerima req.query.semester dan hanya memeriksa bahwa nilainya string tidak kosong, tanpa validasi SEMESTER_RE. Nilai tersebut diteruskan ke publishedBySemester di src/models/nilaiModel.js lalu diinterpolasi langsung ke SQL pada kondisi ks.semester = '${semester}', sedangkan hanya mahasiswaId yang diparameterisasi. Endpoint ini dapat diakses mahasiswa terautentikasi yang lolos requireConsent, sehingga input pengguna dapat mengubah struktur kueri dan menyebabkan SQL Injection (CWE-89)."
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "T-01",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 145,
+      "fungsi": "exports.updateByUserId",
+      "jenis": "SQL Injection & Mass Assignment",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "dec447cd96f38554",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 142,
+        "baris": [
+          "    const kolom = Object.keys(d);",
+          "    const set = kolom.map((k, i) => `${k} = $${i + 2}`).join(', ');",
+          "    const { rows } = await client.query(",
+          "      `UPDATE mahasiswa SET ${set}, updated_at = now()",
+          "       WHERE user_id = $1",
+          "       RETURNING id`,",
+          "      [userId, ...kolom.map((k) => d[k])]"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Kunci (keys) dari objek payload JSON (`req.body`) yang dikirim pengguna diteruskan langsung tanpa filter untuk membentuk klausa SET secara dinamis pada kueri pembaruan SQL. Hal ini mengakibatkan kerentanan kritis di mana penyerang dapat menyuntikkan perintah SQL sembarang maupun memodifikasi atribut kolom internal yang dilarang (Mass Assignment).",
+        "openai": "Nama properti JSON dari PUT /api/mahasiswa/me digunakan langsung untuk membentuk ekspresi SET melalui Object.keys(d). Placeholder hanya melindungi nilai, bukan nama properti tersebut, sehingga mahasiswa dapat menyisipkan ekspresi SQL atau subquery dan menyalin data tabel lain ke field profil yang kemudian dikembalikan dalam respons."
+      },
+      "vendor_penemu": [
+        "google",
+        "openai"
+      ],
+      "kesepakatan": 2
+    },
+    {
+      "id": "T-02",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 54,
+      "fungsi": "listFrom",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "000d7157e043d8f9",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 51,
+        "baris": [
+          "const listFrom = (pola) => `",
+          "  FROM mahasiswa m",
+          "  JOIN users u ON u.id = m.user_id",
+          "  WHERE ('${pola}' IS NULL",
+          "    OR m.nim ILIKE '${pola}' OR m.nama ILIKE '${pola}' OR u.email ILIKE '${pola}')`;",
+          "",
+          "exports.list = async ({ pola, orderBy, limit, offset }) => {"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Parameter pencarian `q` hanya difilter untuk simbol wildcard (`%` dan `_`), tetapi tidak di-escape untuk karakter tanda kutip tunggal (single quote). Variabel ini kemudian diinterpolasi langsung ke dalam format string kueri SQL, sehingga dapat dimanfaatkan untuk eksploitasi SQL Injection oleh pengguna berhak akses admin.",
+        "anthropic": "Parameter q dari query string diubah menjadi pola lalu disisipkan langsung ke string SQL lewat '${pola}' pada listFrom. listQuery hanya meng-escape \\, % dan _, bukan tanda kutip tunggal, sehingga input dengan ' dapat keluar dari literal dan mengubah query. Endpoint admin GET /api/mahasiswa terdampak.",
+        "openai": "Parameter q pada GET /api/mahasiswa diolah listQuery menjadi pola pencarian, lalu diinterpolasikan langsung ke literal SQL dalam listFrom. Transformasi tersebut hanya meng-escape karakter wildcard, bukan tanda kutip SQL, sehingga pemanggil berrole admin dapat menyisipkan ekspresi atau subquery di luar operasi pencarian yang diizinkan aplikasi."
+      },
+      "vendor_penemu": [
+        "google",
+        "anthropic",
+        "openai"
+      ],
+      "kesepakatan": 3
+    },
+    {
+      "id": "T-03",
+      "file": "src/models/nilaiModel.js",
+      "baris": 133,
+      "fungsi": "exports.publishedBySemester",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "d9fa5fdb7e08aca0",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 130,
+        "baris": [
+          "     JOIN mata_kuliah mk ON mk.id = k.mata_kuliah_id",
+          "     WHERE ks.mahasiswa_id = $1",
+          "       AND n.status = 'published'",
+          "       AND ks.semester = '${semester}'",
+          "     ORDER BY mk.kode`,",
+          "    [mahasiswaId]",
+          "  );"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Variabel input `semester` yang bersumber dari query string tidak divalidasi dengan benar pada endpoint `/me/khs` sebelum disisipkan secara mentah melalui interpolasi string ke dalam kueri SQL. Kerentanan ini memberikan celah bagi pengguna untuk menyematkan payload SQL Injection pada parameter pencarian KHS.",
+        "openai": "Parameter semester dari GET /api/nilai/me/khs hanya diperiksa sebagai string tidak kosong oleh controller, lalu diinterpolasikan langsung ke query publishedBySemester. Mahasiswa yang lolos requireConsent dapat menyisipkan sintaks SQL untuk mengubah kondisi seleksi atau melakukan UNION, sehingga pembatasan mahasiswa_id dan status published dapat dilewati."
+      },
+      "vendor_penemu": [
+        "google",
+        "openai"
+      ],
+      "kesepakatan": 2
+    },
+    {
+      "id": "T-04",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 120,
+      "fungsi": "halamanKhs",
+      "jenis": "Stored XSS",
+      "cwe": [
+        "CWE-79"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "94449fe8f6f4c201",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 117,
+        "baris": [
+          "  const baris = items.map((i) => `",
+          "      <tr>",
+          "        <td>${escapeHtml(i.kode)}</td>",
+          "        <td>${i.nama}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.sks)}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.nilai_huruf)}</td>",
+          "      </tr>`).join('');"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Data nama mata kuliah (`i.nama`) yang telah tersimpan di dalam database digabungkan secara langsung ke dalam respons tabel dokumen HTML tanpa proses pelepasan konteks web (escaping). Hal ini berisiko menjalankan serangan Cross-Site Scripting (XSS) secara persisten di peramban pengguna apabila data mata kuliah telah disusupi kode skrip jahat.",
+        "anthropic": "Nama mata kuliah (i.nama) dirender ke HTML KHS tanpa escapeHtml, padahal field lain di-escape. Nama mata kuliah dikelola admin dan validasinya hanya panjang dan tidak kosong, sehingga HTML/script dapat tersimpan dan dieksekusi di browser mahasiswa.",
+        "openai": "Nama mata kuliah berasal dari body endpoint pembuatan atau perubahan mata kuliah oleh admin dan disimpan sebagai teks yang dapat mengandung markup. halamanKhs menyisipkan i.nama langsung ke respons text/html tanpa escapeHtml, sehingga markup tersimpan dapat mengubah struktur dan isi KHS mahasiswa, bukan sekadar ditampilkan sebagai nama mata kuliah."
+      },
+      "vendor_penemu": [
+        "google",
+        "anthropic",
+        "openai"
+      ],
+      "kesepakatan": 3
+    },
+    {
+      "id": "T-05",
+      "file": "src/models/profilModel.js",
+      "baris": 38,
+      "fungsi": "exports.removeEmail",
+      "jenis": "Broken Access Control (IDOR)",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "ce818c254abf542e",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 35,
+        "baris": [
+          "",
+          "exports.removeEmail = async (id, mahasiswaId) => {",
+          "  const { rowCount } = await pool.query(",
+          "    'DELETE FROM email_mahasiswa WHERE id = $1',",
+          "    [id]",
+          "  );",
+          "  return rowCount > 0;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Perintah SQL untuk menghapus data email sekunder sama sekali tidak mengikutsertakan referensi pengecekan kepemilikan (`mahasiswa_id`) terhadap baris yang dituju. Akibatnya, mahasiswa manapun dapat dengan bebas melenyapkan email tambahan milik profil pihak lain selama berhasil menebak parameter ID dari email target (IDOR).",
+        "openai": "ID dari DELETE /api/mahasiswa/me/email/:id diteruskan bersama mahasiswaId pengguna, tetapi query DELETE hanya memfilter id. Mahasiswa yang mengetahui UUID email tambahan milik mahasiswa lain dapat menghapusnya karena kepemilikan tidak diperiksa pada operasi penghapusan."
+      },
+      "vendor_penemu": [
+        "google",
+        "openai"
+      ],
+      "kesepakatan": 2
+    },
+    {
+      "id": "T-06",
+      "file": "src/routes/authRoutes.js",
+      "baris": 5,
+      "fungsi": "POST /login",
+      "jenis": "Missing Rate Limiting",
+      "cwe": [
+        "CWE-307"
+      ],
+      "kategori_owasp": "A07",
+      "penjelasan": null,
+      "sifat": "hardening",
+      "keyakinan": "high",
+      "fingerprint": "7aeb70d86d293354",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 2,
+        "baris": [
+          "const auth = require('../controllers/authController');",
+          "",
+          "router.post('/register', auth.register);",
+          "router.post('/login', auth.login);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Endpoint utama pelayanan otentikasi (login) tidak memiliki implementasi perlindungan terhadap rasio frekuensi akses yang masuk akal, seperti pembatasan laju (rate limiting). Lemahnya mitigasi keamanan standar ini berpotensi memfasilitasi serangan peretasan kredensial secara masif, seperti credential stuffing dan pembobolan acak (brute-force).",
+        "anthropic": "Endpoint login dan register tidak memiliki rate limiting atau penguncian akun, sehingga brute force kata sandi dan pembuatan akun massal dapat dilakukan.",
+        "openai": "Endpoint publik /api/auth/login menerima percobaan email dan password tanpa middleware pembatasan laju maupun pembatasan kegagalan berdasarkan akun. Setiap permintaan tetap menjalankan pemeriksaan bcrypt, sehingga aplikasi tidak menyediakan pembatasan terhadap tebakan password otomatis atau credential stuffing."
+      },
+      "vendor_penemu": [
+        "google",
+        "anthropic",
+        "openai"
+      ],
+      "kesepakatan": 3
+    },
+    {
+      "id": "T-07",
+      "file": "src/controllers/krsController.js",
+      "baris": 110,
+      "fungsi": "exports.submit",
+      "jenis": "Race Condition (TOCTOU)",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "ef005bfb29291acf",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 107,
+        "baris": [
+          "      { kuota, diajukan: total });",
+          "  }",
+          "",
+          "  const updated = await model.transition(header.id, 'draft', 'submitted');",
+          "  if (!updated) throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "",
+          "  res.json({ success: true, data: updated });"
+        ]
+      },
+      "penjelasan_vendor": {
+        "google": "Fungsi operasional untuk submit KRS memisahkan tahap pemverifikasian kuota beban maksimal SKS dengan penguncian status persetujuan, tanpa merangkainya di dalam blok transaksi database tunggal (row-level locking). Celah jeda antaroperasi membaca serta menulis status ini memungkinkan pengguna untuk sengaja menambahkan mata kuliah secara paralel guna melewati batasan kuota.",
+        "openai": "Daftar item dan total SKS dibaca sebelum transisi status, sementara permintaan lain masih dapat menambahkan mata kuliah selama KRS berstatus draft. transition hanya memeriksa status, bukan konsistensi daftar item yang telah dihitung, sehingga permintaan paralel dapat menghasilkan KRS submitted dengan total SKS melebihi kuota."
+      },
+      "vendor_penemu": [
+        "google",
+        "openai"
+      ],
+      "kesepakatan": 2
+    },
+    {
+      "id": "T-02",
+      "file": "src/models/nilaiModel.js",
+      "baris": 133,
+      "fungsi": "publishedBySemester",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "d9fa5fdb7e08aca0",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 130,
+        "baris": [
+          "     JOIN mata_kuliah mk ON mk.id = k.mata_kuliah_id",
+          "     WHERE ks.mahasiswa_id = $1",
+          "       AND n.status = 'published'",
+          "       AND ks.semester = '${semester}'",
+          "     ORDER BY mk.kode`,",
+          "    [mahasiswaId]",
+          "  );"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "Parameter req.query.semester pada khs hanya dicek tidak kosong dan tidak divalidasi dengan SEMESTER_RE, lalu disisipkan ke SQL lewat '${semester}'. Mahasiswa yang terautentikasi dapat menyuntikkan SQL untuk membaca data lain, termasuk data terenkripsi dan data mahasiswa lain."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-03",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "fungsi": "khs",
+      "jenis": "Reflected XSS",
+      "cwe": [
+        "CWE-79"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "medium",
+      "fingerprint": "15c81303d027619e",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 157,
+        "baris": [
+          "exports.khs = async (req, res) => {",
+          "  const semester = typeof req.query.semester === 'string' ? req.query.semester : '';",
+          "  if (!semester) {",
+          "    res.status(400).type('html').send(`<p>Semester \"${semester}\" tidak dikenali</p>`);",
+          "    return;",
+          "  }",
+          "  const mahasiswaId = await krsModel.mahasiswaIdByUserId(req.user.id);"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "Nilai query semester dimasukkan mentah ke respons HTML tanpa escapeHtml saat semester kosong. Selain itu pada halamanKhs, kolom i.nama ditulis tanpa escape sementara kolom lain di-escape. Nama mata kuliah bisa dibuat admin, sehingga berpotensi menjadi stored XSS."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-05",
+      "file": "src/controllers/mahasiswaController.js",
+      "baris": 96,
+      "fungsi": "updateMe",
+      "jenis": "Mass Assignment / SQL Injection lewat nama kolom",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "6dd4cb9248ca427b",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 93,
+        "baris": [
+          "};",
+          "",
+          "exports.updateMe = async (req, res) => {",
+          "  const data = { ...req.body };",
+          "  delete data.rekening;",
+          "",
+          "  const rekeningBody = req.body?.rekening;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "updateMe menyalin seluruh req.body tanpa validasi atau whitelist, lalu updateByUserId membangun klausa SET dari nama kunci body secara langsung (`${k} = $n`). Mahasiswa dapat menyuntikkan nama kolom/ekspresi SQL, atau mengubah kolom terlarang seperti nim, user_id dan field admin. Nilai terenkripsi juga tidak dienkripsi lewat jalur ini."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-06",
+      "file": "src/models/profilModel.js",
+      "baris": 38,
+      "fungsi": "removeEmail",
+      "jenis": "IDOR (kepemilikan tidak dicek)",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "4444d3ab55e7f62a",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 35,
+        "baris": [
+          "",
+          "exports.removeEmail = async (id, mahasiswaId) => {",
+          "  const { rowCount } = await pool.query(",
+          "    'DELETE FROM email_mahasiswa WHERE id = $1',",
+          "    [id]",
+          "  );",
+          "  return rowCount > 0;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "removeEmail menghapus berdasarkan id saja tanpa kondisi mahasiswa_id, padahal parameter mahasiswaId diterima. Mahasiswa mana pun dapat menghapus email tambahan milik mahasiswa lain dengan menebak atau mengetahui UUID-nya."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-07",
+      "file": "src/models/cutiModel.js",
+      "baris": 53,
+      "fungsi": "findOwned",
+      "jenis": "IDOR (kepemilikan tidak dicek)",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "c60c26a64481eec8",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 50,
+        "baris": [
+          "",
+          "exports.findOwned = async (id, mahasiswaId) => {",
+          "  const { rows } = await pool.query(",
+          "    `${DETAIL_SELECT} WHERE c.id = $2`,",
+          "    [KEY, id]",
+          "  );",
+          "  return rows[0] || null;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "findOwned menerima mahasiswaId tetapi query hanya memfilter c.id. Endpoint GET /me/:id mengembalikan detail pengajuan cuti, termasuk alamat dan telepon terdekripsi, milik mahasiswa lain. Selain itu batal memakai hasil ini."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-08",
+      "file": "src/routes/cutiRoutes.js",
+      "baris": 17,
+      "fungsi": "PUT /:id/status",
+      "jenis": "Missing Authorization",
+      "cwe": [
+        "CWE-862"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "f403e7fe68dbcff4",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 14,
+        "baris": [
+          "",
+          "router.get('/', authorize('admin'), c.listAdmin);",
+          "router.get('/:id', authorize('admin'), c.getById);",
+          "router.put('/:id/status', c.updateStatus);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "Route PUT /:id/status hanya dilindungi authenticate tanpa authorize('admin'). Mahasiswa mana pun yang login dapat menyetujui atau menolak pengajuan cuti siapa pun.",
+        "openai": "PUT /api/cuti/:id/status hanya dilindungi authenticate dan tidak memasang authorize('admin'). Pengguna berrole mahasiswa dapat mengirim status disetujui atau ditolak untuk pengajuan yang diketahuinya, karena updateStatus tidak melakukan pemeriksaan role atau kepemilikan dan mengembalikan detail pengajuan setelah perubahan."
+      },
+      "vendor_penemu": [
+        "anthropic",
+        "openai"
+      ],
+      "kesepakatan": 2
+    },
+    {
+      "id": "T-09",
+      "file": "src/controllers/cutiController.js",
+      "baris": 50,
+      "fungsi": "create",
+      "jenis": "Mass Assignment (status dari body)",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "3819bd58611d7b22",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 47,
+        "baris": [
+          "    data.dokumen_id = dokumenId;",
+          "  }",
+          "",
+          "  if (req.body?.status) data.status = req.body.status;",
+          "  const id = await model.create({ ...data, mahasiswa_id: mahasiswaId });",
+          "  ",
+          "  const row = await model.findById(id);"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "req.body.status diteruskan ke model.create dan dimasukkan ke kolom status tanpa validasi. Mahasiswa dapat membuat pengajuan cuti langsung berstatus 'disetujui', melewati alur persetujuan admin."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-10",
+      "file": "src/controllers/cutiController.js",
+      "baris": 87,
+      "fungsi": "listAdmin",
+      "jenis": "Sort/order tidak konsisten dan injeksi ORDER BY",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "b8a558a2675e1e77",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 84,
+        "baris": [
+          "  const paging = listQuery(req.query, { sortMap: model.SORT, defaultSort: 'created_at', defaultOrder: 'desc' });",
+          "  const { rows, total } = await model.listAdmin({",
+          "    ...paging,",
+          "    sort: req.query.sort || 'created_at',",
+          "    order: req.query.order || 'asc',",
+          "  });",
+          "  res.set('X-Total-Count', String(total));"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "listAdmin memakai req.query.sort dan req.query.order mentah, bukan hasil listQuery.orderBy, lalu model menyisipkan `${sort} ${order}` ke ORDER BY. Validasi listQuery diabaikan karena sort bukan dipetakan lewat sortMap, sehingga admin dapat menyuntikkan SQL lewat parameter itu. Selain itu paging.pola dan nilai default order juga tidak konsisten."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-11",
+      "file": "src/controllers/cutiController.js",
+      "baris": 13,
+      "fungsi": "RULES",
+      "jenis": "Field sensitif cuti diekspos di list admin",
+      "cwe": [
+        "CWE-359"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "hardening",
+      "keyakinan": "low",
+      "fingerprint": "dbe4f637801fc1e2",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 10,
+        "baris": [
+          "",
+          "const KEPUTUSAN = ['disetujui', 'ditolak'];",
+          "",
+          "const RULES = {",
+          "  semester: (v) => typeof v === 'string' && SEMESTER_RE.test(v) && semesterKey(v) >= semesterKey(SEMESTER_AKTIF),",
+          "  kategori: (v) => KATEGORI_CUTI.includes(v),",
+          "  alasan: (v) => typeof v === 'string' && v.trim().length > 0 && v.length <= 1000,"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "Daftar admin cuti mendekripsi dan mengembalikan alamat_cuti dan nomor_telepon untuk semua baris, padahal itu hanya list ringkasan. Hal ini memperluas paparan data pribadi tanpa kebutuhan jelas."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-12",
+      "file": "src/app.js",
+      "baris": 10,
+      "fungsi": "",
+      "jenis": "CORS terlalu permisif",
+      "cwe": [
+        "CWE-942"
+      ],
+      "kategori_owasp": "A02",
+      "penjelasan": null,
+      "sifat": "hardening",
+      "keyakinan": "low",
+      "fingerprint": "2bd15d1b70a44e44",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 7,
+        "baris": [
+          "const app = express();",
+          "",
+          "app.use(helmet());",
+          "app.use(cors());",
+          "app.use(express.json());",
+          "",
+          "app.get('/health', (req, res) => {"
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "cors() dipakai tanpa konfigurasi sehingga semua origin diizinkan. Karena autentikasi memakai header Bearer, risikonya terbatas, tetapi origin sebaiknya dibatasi ke frontend yang sah."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-14",
+      "file": "src/routes/konsenRoutes.js",
+      "baris": 9,
+      "fungsi": "PUT /:konsenId",
+      "jenis": "Mass assignment status konsen",
+      "cwe": [
+        "CWE-840"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": null,
+      "sifat": "hardening",
+      "keyakinan": "low",
+      "fingerprint": "582dcb8a444038bd",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 6,
+        "baris": [
+          "",
+          "router.get('/', c.list);",
+          "router.post('/', c.create);",
+          "router.put('/:konsenId', c.updateStatus);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      },
+      "penjelasan_vendor": {
+        "anthropic": "Persetujuan orang tua hanya berupa pengubahan status oleh admin tanpa verifikasi bukti, sehingga kontrol konsen untuk mahasiswa di bawah umur bergantung penuh pada satu klik admin. Ini bersifat kelemahan desain, bukan celah langsung."
+      },
+      "vendor_penemu": [
+        "anthropic"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-01",
+      "file": "src/controllers/cutiController.js",
+      "baris": 50,
+      "fungsi": "exports.create",
+      "jenis": "Mass Assignment Status Cuti",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "6934101fd7ff5259",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 47,
+        "baris": [
+          "    data.dokumen_id = dokumenId;",
+          "  }",
+          "",
+          "  if (req.body?.status) data.status = req.body.status;",
+          "  const id = await model.create({ ...data, mahasiswa_id: mahasiswaId });",
+          "  ",
+          "  const row = await model.findById(id);"
+        ]
+      },
+      "penjelasan_vendor": {
+        "openai": "Mahasiswa dapat menyertakan status dalam body POST /api/cuti/me, dan field tersebut disalin ke data pembuatan pengajuan. model.create kemudian menggunakan status itu dalam INSERT, sehingga mahasiswa dapat membuat pengajuan langsung berstatus disetujui tanpa melalui keputusan admin."
+      },
+      "vendor_penemu": [
+        "openai"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-02",
+      "file": "src/controllers/krsController.js",
+      "baris": 70,
+      "fungsi": "exports.addItem",
+      "jenis": "Race Condition Status KRS",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "4b28ca8df5e8ca74",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 67,
+        "baris": [
+          "    throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "  }",
+          "",
+          "  const id = await model.addItem(header.id, mataKuliahId);",
+          "  res.status(201).json({",
+          "    success: true,",
+          "    data: { id, krs_semester_id: header.id, mata_kuliah_id: mataKuliahId },"
+        ]
+      },
+      "penjelasan_vendor": {
+        "openai": "Status draft diperiksa dari hasil getOrCreateHeader sebelum model.addItem menjalankan INSERT terpisah tanpa pemeriksaan status. Permintaan addItem dan submit yang berjalan bersamaan dapat membuat penambahan tetap berhasil setelah KRS menjadi submitted, karena pemeriksaan dan perubahan tidak dilindungi penguncian atau transaksi yang menyelaraskan keduanya."
+      },
+      "vendor_penemu": [
+        "openai"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-03",
+      "file": "src/controllers/krsController.js",
+      "baris": 87,
+      "fungsi": "exports.removeItem",
+      "jenis": "Race Condition Penghapusan Item KRS",
+      "cwe": [
+        "CWE-367"
+      ],
+      "kategori_owasp": "A06",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "6e9e12d9fc6b9c78",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 84,
+        "baris": [
+          "    throw new AppError(409, 'CONFLICT', 'KRS tidak dalam status draft');",
+          "  }",
+          "",
+          "  await model.removeItem(item.id);",
+          "  res.json({ success: true, data: { id: item.id, deleted: true } });",
+          "};",
+          ""
+        ]
+      },
+      "penjelasan_vendor": {
+        "openai": "Status draft diperiksa melalui findItemOwned, tetapi penghapusan berikutnya hanya menggunakan ID item tanpa memeriksa kembali status KRS. Jika status berubah menjadi submitted atau locked di antara kedua operasi, permintaan mahasiswa tetap dapat menghapus item yang seharusnya tidak lagi dapat diubah."
+      },
+      "vendor_penemu": [
+        "openai"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-05",
+      "file": "src/controllers/mahasiswaController.js",
+      "baris": 96,
+      "fungsi": "exports.updateMe",
+      "jenis": "Mass Assignment Profil Mahasiswa",
+      "cwe": [
+        "CWE-915"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "14b02101d032ab8a",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 93,
+        "baris": [
+          "};",
+          "",
+          "exports.updateMe = async (req, res) => {",
+          "  const data = { ...req.body };",
+          "  delete data.rekening;",
+          "",
+          "  const rekeningBody = req.body?.rekening;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "openai": "Seluruh properti body PUT /api/mahasiswa/me selain rekening diteruskan ke updateByUserId, yang menjadikannya kolom UPDATE tanpa allowlist. Mahasiswa dapat mengubah atribut internal seperti user_id atau atribut identitas seperti nim, termasuk memindahkan keterkaitan profil ke akun mahasiswa lain yang belum memiliki profil, tanpa pemeriksaan hak perubahan atribut tersebut."
+      },
+      "vendor_penemu": [
+        "openai"
+      ],
+      "kesepakatan": 1
+    },
+    {
+      "id": "T-07",
+      "file": "src/models/cutiModel.js",
+      "baris": 53,
+      "fungsi": "exports.findOwned",
+      "jenis": "IDOR Pembacaan Pengajuan Cuti",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": null,
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "f8039fdb4f671e02",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 50,
+        "baris": [
+          "",
+          "exports.findOwned = async (id, mahasiswaId) => {",
+          "  const { rows } = await pool.query(",
+          "    `${DETAIL_SELECT} WHERE c.id = $2`,",
+          "    [KEY, id]",
+          "  );",
+          "  return rows[0] || null;"
+        ]
+      },
+      "penjelasan_vendor": {
+        "openai": "ID dari GET /api/cuti/me/:id diteruskan ke findOwned bersama mahasiswaId pengguna, tetapi query hanya memfilter c.id dan mengabaikan mahasiswaId. Mahasiswa yang mengetahui UUID pengajuan lain dapat membaca pengajuan tersebut, termasuk alasan, alamat cuti, nomor telepon yang didekripsi, dan catatan admin."
+      },
+      "vendor_penemu": [
+        "openai"
+      ],
+      "kesepakatan": 1
+    }
+  ]
+}
