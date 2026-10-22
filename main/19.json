@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39714180159,
+    "nomor": 19,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": null,
+    "model_diminta": null,
+    "model_menjawab": null,
+    "kondisi": "utama",
+    "skenario": "A",
+    "mode_model": "tunggal",
+    "mulai": "2026-10-22T03:05:27.225Z",
+    "selesai": "2026-10-22T03:05:30.081Z",
+    "durasi_detik": 3,
+    "objek_uji": {
+      "commit": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": null,
+      "bersih": null
+    },
+    "hash_prompt": {
+      "system": null,
+      "user_deteksi": null
+    },
+    "sumber_sonar": "api",
+    "analisis_sonar": {
+      "tanggal": "2026-10-22T02:57:37+0000",
+      "revisi": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "sonar_beku": null,
+    "biaya_usd": 0,
+    "thinking_token": {
+      "deteksi": null,
+      "total": null
+    },
+    "status_panggilan": {
+      "total": 0,
+      "ok": 0,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0,
+      "deteksi_kosong": 0
+    },
+    "pipeline": null
+  },
+  "alerts": [
+    {
+      "id": "SONAR-01",
+      "rule": "javascript:S5122",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/app.js",
+      "baris": 10,
+      "cwe": [
+        "CWE-346",
+        "CWE-942"
+      ],
+      "pesan": "Make sure that enabling CORS is safe here.",
+      "severity_sonar": "MAJOR",
+      "severity_asal": "sonar",
+      "putusan": null,
+      "putusan_asal": "tanpa-verifikasi",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": []
+    },
+    {
+      "id": "SONAR-02",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": null,
+      "putusan_asal": "tanpa-verifikasi",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": []
+    },
+    {
+      "id": "SONAR-03",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 170,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": null,
+      "putusan_asal": "tanpa-verifikasi",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": []
+    },
+    {
+      "id": "SONAR-04",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/cutiModel.js",
+      "baris": 93,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": null,
+      "putusan_asal": "tanpa-verifikasi",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": []
+    },
+    {
+      "id": "SONAR-05",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/nilaiModel.js",
+      "baris": 124,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": null,
+      "putusan_asal": "tanpa-verifikasi",
+      "keyakinan": null,
+      "alasan": null,
+      "tanda": []
+    }
+  ],
+  "findings": []
+}
