@@ -1,7 +1,32 @@
 {
   "schema_version": 2,
-  "diperbarui": "2026-10-22T03:05:30.081Z",
+  "diperbarui": "2026-10-22T14:06:54.373Z",
   "runs": [
+    {
+      "id": 39791873973,
+      "nomor": 20,
+      "branch": "main",
+      "commit": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "vendor": "google",
+      "model_diminta": "gemini-3.1-pro-preview",
+      "model_menjawab": "gemini-3.1-pro-preview",
+      "kondisi": "utama",
+      "mulai": "2026-10-22T14:01:28.902Z",
+      "selesai": "2026-10-22T14:06:54.373Z",
+      "durasi_detik": 325,
+      "biaya_usd": 0.808672,
+      "path": "main/20.json",
+      "status": "ok",
+      "jumlah": {
+        "alert": 5,
+        "temuan": 11,
+        "true_positive": 2,
+        "false_positive": 3,
+        "uncertain": 0,
+        "tidak_sepakat": 0,
+        "tanpa_putusan": 0
+      }
+    },
     {
       "id": 39714180159,
       "nomor": 19,

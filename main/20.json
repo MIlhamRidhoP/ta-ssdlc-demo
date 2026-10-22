@@ -1,0 +1,725 @@
+{
+  "schema_version": 2,
+  "run": {
+    "id": 39791873973,
+    "nomor": 20,
+    "repo": "MIlhamRidhoP/ta-ssdlc-demo",
+    "asal": "workflow",
+    "vendor": "google",
+    "model_diminta": "gemini-3.1-pro-preview",
+    "model_menjawab": "gemini-3.1-pro-preview",
+    "kondisi": "utama",
+    "skenario": "B",
+    "mode_model": "tunggal",
+    "mulai": "2026-10-22T14:01:28.902Z",
+    "selesai": "2026-10-22T14:06:54.373Z",
+    "durasi_detik": 325,
+    "objek_uji": {
+      "commit": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "branch": "main",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "commit_kode": {
+      "head": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "bersih": true
+    },
+    "hash_prompt": {
+      "system": "bb687afc7f13696bf922240f0923c7266aa3f28fd645971bf9d392733e19c7fa",
+      "user_deteksi": "568d6cbaa989f393a995306376ca6d507884265226f414338fb0093e9990906c"
+    },
+    "sumber_sonar": "api",
+    "analisis_sonar": {
+      "tanggal": "2026-10-22T14:00:22+0000",
+      "revisi": "1314f0405d85cc00c09a07108a31ba8cdb485322",
+      "tree_src": "ef5ff340dcb93e8153e52262bb79b64ea031e3cd"
+    },
+    "sonar_beku": null,
+    "biaya_usd": 0.808672,
+    "thinking_token": {
+      "deteksi": 25094,
+      "total": 43083
+    },
+    "status_panggilan": {
+      "total": 6,
+      "ok": 6,
+      "refusal": 0,
+      "truncated": 0,
+      "error": 0,
+      "parse_gagal": 0,
+      "deteksi_kosong": 0
+    },
+    "pipeline": null,
+    "remediasi": {
+      "versi_prompt": "remediasi-v1",
+      "hash_prompt": {
+        "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+        "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+        "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+      },
+      "vendor": "google",
+      "model_diminta": "gemini-3.1-pro-preview",
+      "model_menjawab": "gemini-3.1-pro-preview",
+      "item_dikirim": 11,
+      "item_terisi": 11,
+      "tidak_konsisten": 0,
+      "usage": {
+        "input": 4560,
+        "input_dari_cache": 0,
+        "input_tulis_cache": 0,
+        "output": 3097,
+        "thinking": 5647
+      },
+      "biaya_usd": 0.114048,
+      "status_panggilan": {
+        "total": 1,
+        "ok": 1,
+        "refusal": 0,
+        "truncated": 0,
+        "error": 0,
+        "parse_gagal": 0
+      },
+      "waktu_mulai": "2026-10-22T14:07:10.875Z",
+      "waktu_selesai": "2026-10-22T14:08:09.506Z",
+      "durasi_ms": 58631,
+      "status": "ok",
+      "alasan": null
+    }
+  },
+  "alerts": [
+    {
+      "id": "SONAR-01",
+      "rule": "javascript:S5122",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/app.js",
+      "baris": 10,
+      "cwe": [
+        "CWE-346",
+        "CWE-942"
+      ],
+      "pesan": "Make sure that enabling CORS is safe here.",
+      "severity_sonar": "MAJOR",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Penggunaan app.use(cors()) secara bawaan mengatur Access-Control-Allow-Origin menjadi *, yang sering ditandai sebagai miskonfigurasi CORS (CWE-346, CWE-942). Namun, karena aplikasi ini murni menggunakan JWT pada header Authorization (Bearer token) dan tidak menggunakan cookie, peramban tidak akan mengirimkan kredensial secara otomatis pada permintaan lintas origin. Ketiadaan kredensial bawaan peramban (ambient authority) ini mencegah origin berbahaya membaca data sensitif, sehingga peringatan ini merupakan false positive.",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-02",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Pada baris 160 di src/controllers/nilaiController.js, variabel `semester` dipastikan selalu bernilai string kosong (`\"\"`) karena blok kode tersebut hanya dieksekusi jika kondisi `!semester` bernilai true. Dengan demikian, tidak ada input pengguna yang berbahaya yang direfleksikan ke dalam respons HTML, sehingga tidak memungkinkan terjadinya Reflected XSS (CWE-79).",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-03",
+      "rule": "jssecurity:S5131",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 170,
+      "cwe": [
+        "CWE-79"
+      ],
+      "pesan": "Reflected XSS via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "false_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Peringatan CWE-79 ini melaporkan potensi Reflected XSS karena variabel input user 'semester' diteruskan ke respons HTML di baris 170. Namun, di dalam fungsi 'halamanKhs', variabel 'semester' telah disanitasi menggunakan fungsi 'escapeHtml' sebelum dirender ke dalam string HTML. Fungsi kustom tersebut secara aman mengenkode karakter berbahaya menjadi entitas HTML, sehingga peringatan ini adalah false positive karena alat analisis gagal mengenali fungsi sanitasi tersebut.",
+      "tanda": []
+    },
+    {
+      "id": "SONAR-04",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/cutiModel.js",
+      "baris": 93,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "true_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Fungsi listAdmin di src/models/cutiModel.js menyisipkan parameter sort dan order secara langsung ke string query SQL. Pemanggilan fungsi ini di src/controllers/cutiController.js meneruskan nilai req.query.sort dan req.query.order yang tidak divalidasi, mengabaikan properti orderBy yang aman dari listQuery, sehingga rentan terhadap SQL Injection (CWE-89).",
+      "tanda": [],
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-20",
+        "langkah": [
+          "Implementasikan pendekatan 'terima yang diketahui baik' pada pengolahan input req.query.sort dan req.query.order sebelum diteruskan ke fungsi listAdmin di model.",
+          "Tolak atau ganti secara paksa input dengan nilai default yang sah (seperti properti orderBy yang aman) bila nilai masukannya tidak terdaftar sebagai skema terpercaya.",
+          "Pastikan pembacaan ini terjadi di tingkat kontroler (misalnya di src/controllers/cutiController.js) sebelum nilai ditransfer sebagai argumen string langsung."
+        ],
+        "potongan_kode_usulan": null,
+        "catatan_risiko": "Karena potongan kode asli untuk fungsi pengontrol dan rute ini tidak dilampirkan, letak pasti validasi req.query.sort tersebut perlu dicari tahu secara spesifik oleh Anda pada basis kode.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "SONAR-05",
+      "rule": "jssecurity:S3649",
+      "tipe": "VULNERABILITY",
+      "sumber": "issue",
+      "file": "src/models/nilaiModel.js",
+      "baris": 124,
+      "cwe": [
+        "CWE-20",
+        "CWE-89"
+      ],
+      "pesan": "SQL Injection via unsanitized user input",
+      "severity_sonar": "BLOCKER",
+      "severity_asal": "sonar",
+      "putusan": "true_positive",
+      "putusan_asal": "verifikasi-model",
+      "keyakinan": "high",
+      "alasan": "Alert ini merupakan true positive. Nilai parameter 'semester' yang diambil langsung dari req.query.semester pada fungsi khs di src/controllers/nilaiController.js tidak melalui validasi regex seperti parameter lainnya, melainkan hanya diperiksa apakah bertipe string. Nilai tersebut kemudian disisipkan secara langsung menggunakan interpolasi string ke dalam query SQL pada fungsi publishedBySemester di src/models/nilaiModel.js, sehingga membuka celah SQL Injection.",
+      "tanda": [],
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-20",
+        "langkah": [
+          "Terapkan filter validasi ekspresi reguler (Regex) untuk tipe data parameter req.query.semester pada fungsi khs di src/controllers/nilaiController.js untuk menjamin bahwa nilainya persis seperti format nilai yang diantisipasi (contohnya angka absolut).",
+          "Tolak input secara dini dengan tanggapan galat pada level kontroler bila input tidak memenuhi kriteria kanonikalisasi Regex tersebut.",
+          "Modifikasi fungsi publishedBySemester pada src/models/nilaiModel.js untuk meninggalkan interpolasi string lalu pakai kembali skema parameterized query standar sebagai lapisan keamanan tambahan."
+        ],
+        "potongan_kode_usulan": null,
+        "catatan_risiko": "Aturan ekspresi reguler yang dibuat tidak boleh terlalu ketat sampai memblokir representasi input semester yang valid, dan rincian perbaikan fungsi publishedBySemester perlu dirangkai manual karena kode sumber spesifiknya absen pada pelaporan.",
+        "tidak_konsisten": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "T-01",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 54,
+      "fungsi": "listFrom",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Input pola dari fitur pencarian digabungkan langsung ke dalam kueri SQL pada fungsi listFrom. Karena filter penggantian hanya meng-escape simbol persen dan underscore namun membiarkan tanda kutip (single quote), penyerang dapat menyuntikkan serta mengeksekusi sintaks SQL arbitrer.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "000d7157e043d8f9",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 51,
+        "baris": [
+          "const listFrom = (pola) => `",
+          "  FROM mahasiswa m",
+          "  JOIN users u ON u.id = m.user_id",
+          "  WHERE ('${pola}' IS NULL",
+          "    OR m.nim ILIKE '${pola}' OR m.nama ILIKE '${pola}' OR u.email ILIKE '${pola}')`;",
+          "",
+          "exports.list = async ({ pola, orderBy, limit, offset }) => {"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-89",
+        "langkah": [
+          "Ubah fungsi listFrom di src/models/mahasiswaModel.js agar tidak menyisipkan parameter pola secara dinamis dengan menggunakan interpolasi string.",
+          "Ganti nilai variabel pola pada klausa WHERE di fungsi listFrom dengan penanda parameter kueri basis data (seperti $1).",
+          "Sesuaikan fungsi pemanggil (list) agar mengirimkan variabel pola di dalam array parameter terpisah saat mengeksekusi kueri melalui pustaka klien."
+        ],
+        "potongan_kode_usulan": "const listFrom = () => `\n  FROM mahasiswa m\n  JOIN users u ON u.id = m.user_id\n  WHERE ($1::text IS NULL\n    OR m.nim ILIKE $1 OR m.nama ILIKE $1 OR u.email ILIKE $1)`;\n\nexports.list = async ({ pola, orderBy, limit, offset }) => {",
+        "catatan_risiko": "Pastikan urutan parameter kueri yang dieksekusi di fungsi list benar-benar sesuai dengan letak indeks $1 yang baru. Anda mungkin perlu memeriksa seluruh struktur kueri yang menggabungkan fungsi listFrom ini.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-02",
+      "file": "src/models/cutiModel.js",
+      "baris": 98,
+      "fungsi": "listAdmin",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Parameter sort dan order dari query string URL diteruskan langsung ke dalam klausa ORDER BY di kueri database tanpa proses validasi menggunakan daftar putih (safelist). Hal ini memungkinkan penyerang untuk memodifikasi struktur kueri dan mengeksekusi celah injeksi SQL.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "bf78b8ef9e487904",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 95,
+        "baris": [
+          "              pgp_sym_decrypt(c.alamat_cuti, $4) AS alamat_cuti,",
+          "              pgp_sym_decrypt(c.nomor_telepon, $4) AS nomor_telepon",
+          "       ${ADMIN_FROM}",
+          "       ORDER BY ${sort} ${order}, c.id",
+          "       LIMIT $2 OFFSET $3`,",
+          "      [pola, limit, offset, KEY]",
+          "    );"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-89",
+        "langkah": [
+          "Buat daftar putih (safelist) di src/models/cutiModel.js yang berisi nama-nama kolom dan arah urutan yang benar-benar sah untuk operasi pengurutan.",
+          "Validasi parameter sort dan order dari masukan luar terhadap daftar putih tersebut sebelum merangkai string kueri secara dinamis.",
+          "Jika parameter di luar daftar putih, berikan nilai urutan bawaan yang dijamin aman ke dalam string klausa ORDER BY."
+        ],
+        "potongan_kode_usulan": "       const allowedSort = ['id', 'tanggal', 'status']; // sesuaikan\n       const allowedOrder = ['ASC', 'DESC'];\n       const safeSort = allowedSort.includes(sort) ? sort : 'id';\n       const safeOrder = allowedOrder.includes(order.toUpperCase()) ? order.toUpperCase() : 'ASC';\n       \n       const query = `... \n       ORDER BY ${safeSort} ${safeOrder}, c.id\n       LIMIT $2 OFFSET $3`;",
+        "catatan_risiko": "Daftar putih kolom harus dikelola secara manual dan disesuaikan bila terjadi penambahan atribut pada tabel database di masa mendatang. Pembaruan secara berkala wajib diperhatikan.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-03",
+      "file": "src/models/nilaiModel.js",
+      "baris": 133,
+      "fungsi": "publishedBySemester",
+      "jenis": "SQL Injection",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Nilai parameter semester dari request secara langsung disisipkan ke dalam string SQL menggunakan interpolasi string tanpa escaping tambahan. Ketiadaan penggunaan parameterized query pada bagian ini memicu risiko kritis bagi penyerang untuk mengubah alur kueri database.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "d9fa5fdb7e08aca0",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 130,
+        "baris": [
+          "     JOIN mata_kuliah mk ON mk.id = k.mata_kuliah_id",
+          "     WHERE ks.mahasiswa_id = $1",
+          "       AND n.status = 'published'",
+          "       AND ks.semester = '${semester}'",
+          "     ORDER BY mk.kode`,",
+          "    [mahasiswaId]",
+          "  );"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-89",
+        "langkah": [
+          "Hapus penggabungan string yang menyisipkan variabel semester secara langsung pada klausa WHERE di file src/models/nilaiModel.js.",
+          "Ubah bagian AND ks.semester = '${semester}' agar menggunakan parameter kueri berurutan (misalnya $2).",
+          "Tambahkan variabel semester sebagai elemen kedua di dalam array penyimpan parameter (bersama mahasiswaId) untuk dieksekusi sebagai parameterized query."
+        ],
+        "potongan_kode_usulan": "     JOIN mata_kuliah mk ON mk.id = k.mata_kuliah_id\n     WHERE ks.mahasiswa_id = $1\n       AND n.status = 'published'\n       AND ks.semester = $2\n     ORDER BY mk.kode`,\n    [mahasiswaId, semester]\n  );",
+        "catatan_risiko": "Pastikan bahwa tipe data input semester konsisten dengan struktur skema pada database. Jika ada referensi indeks dolar lainnya di kueri yang sama, penomoran urutan harus ditata kembali dengan presisi.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-04",
+      "file": "src/models/mahasiswaModel.js",
+      "baris": 145,
+      "fungsi": "updateByUserId",
+      "jenis": "SQL Injection & Mass Assignment",
+      "cwe": [
+        "CWE-89"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Fungsi updateByUserId mengambil semua properti dari body request dan mengubahnya menjadi nama kolom secara dinamis pada perintah UPDATE tanpa divalidasi. Selain mengizinkan Mass Assignment pada kolom rahasia, implementasi key tanpa escape ini memberikan titik injeksi SQL yang fatal.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "dec447cd96f38554",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 142,
+        "baris": [
+          "    const kolom = Object.keys(d);",
+          "    const set = kolom.map((k, i) => `${k} = $${i + 2}`).join(', ');",
+          "    const { rows } = await client.query(",
+          "      `UPDATE mahasiswa SET ${set}, updated_at = now()",
+          "       WHERE user_id = $1",
+          "       RETURNING id`,",
+          "      [userId, ...kolom.map((k) => d[k])]"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-89",
+        "langkah": [
+          "Buat daftar parameter (safelist) statis di dalam src/models/mahasiswaModel.js untuk menampung nama kolom spesifik yang diizinkan untuk diperbarui (misalnya nama, alamat).",
+          "Saring array kolom yang diekstrak dari parameter d agar hanya menyertakan entri yang benar-benar tercantum dalam daftar kolom yang sah.",
+          "Jika hasil filter terhadap properti tersebut kosong, tolak pembaruan dan jangan eksekusi string query untuk mencegah error atau modifikasi tak diizinkan."
+        ],
+        "potongan_kode_usulan": "    const kolomSah = ['nama', 'alamat', 'telepon']; // sesuaikan kolom\n    const kolom = Object.keys(d).filter(k => kolomSah.includes(k));\n    if (kolom.length === 0) throw new Error('Input tidak valid');\n    const set = kolom.map((k, i) => `${k} = ${i + 2}`).join(', ');\n    const { rows } = await client.query(\n      `UPDATE mahasiswa SET ${set}, updated_at = now()\n       WHERE user_id = $1\n       RETURNING id`,\n      [userId, ...kolom.map((k) => d[k])]\n    );",
+        "catatan_risiko": "Kueri berpotensi gagal menjalankan fungsionalitas pembaruan asli jika Anda tidak memasukkan semua kolom yang benar-benar dibutuhkan secara bisnis ke dalam daftar pengecekan manual tersebut.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-05",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 160,
+      "fungsi": "exports.khs",
+      "jenis": "Reflected Cross-Site Scripting (XSS)",
+      "cwe": [
+        "CWE-79"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Nilai input semester dari query string langsung dicetak kembali di dalam respons teks HTML pada kasus error tanpa melalui proses encoding karakter. Penyerang berpotensi memanipulasi tautan untuk menjalankan eksekusi skrip lintas situs (Reflected XSS) di peramban pengguna.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "95a22ead156a7fe6",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 157,
+        "baris": [
+          "exports.khs = async (req, res) => {",
+          "  const semester = typeof req.query.semester === 'string' ? req.query.semester : '';",
+          "  if (!semester) {",
+          "    res.status(400).type('html').send(`<p>Semester \"${semester}\" tidak dikenali</p>`);",
+          "    return;",
+          "  }",
+          "  const mahasiswaId = await krsModel.mahasiswaIdByUserId(req.user.id);"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-79",
+        "langkah": [
+          "Muat pustaka atau utilitas sanitasi data (seperti escape-html atau implementasi escapeHtml yang ada di modul lain) ke dalam file src/controllers/nilaiController.js.",
+          "Gunakan fungsi encoding keluaran tersebut untuk mengonversi variabel semester agar sesuai dengan konteks badan HTML sebelum digabungkan ke tag paragraf.",
+          "Pastikan variabel divalidasi juga untuk tipe data yang diekspektasikan sebagai pendekatan pertahanan berlapis."
+        ],
+        "potongan_kode_usulan": "exports.khs = async (req, res) => {\n  const semester = typeof req.query.semester === 'string' ? req.query.semester : '';\n  if (!semester) {\n    res.status(400).type('html').send(`<p>Semester \"${escapeHtml(semester)}\" tidak dikenali</p>`);\n    return;\n  }\n  const mahasiswaId = await krsModel.mahasiswaIdByUserId(req.user.id);",
+        "catatan_risiko": "Anda mungkin perlu menambahkan dependensi eksternal untuk escaping yang aman jika sistem ini tidak memiliki pustaka utilitas bawaan, misalnya dengan memasang dependensi escape-html melalui npm.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-06",
+      "file": "src/controllers/nilaiController.js",
+      "baris": 120,
+      "fungsi": "halamanKhs",
+      "jenis": "Stored Cross-Site Scripting (XSS)",
+      "cwe": [
+        "CWE-79"
+      ],
+      "kategori_owasp": "A05",
+      "penjelasan": "Data i.nama (nama mata kuliah) yang disuplai dari database disisipkan ke kode keluaran HTML KHS tanpa dilindungi oleh fungsi khusus seperti escapeHtml. Apabila nama mata kuliah dimanipulasi dengan elemen tag jahat, halaman otomatis memicunya saat diakses oleh mahasiswa (Stored XSS).",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "b7b5dfc9668090fd",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 117,
+        "baris": [
+          "  const baris = items.map((i) => `",
+          "      <tr>",
+          "        <td>${escapeHtml(i.kode)}</td>",
+          "        <td>${i.nama}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.sks)}</td>",
+          "        <td class=\"angka\">${escapeHtml(i.nilai_huruf)}</td>",
+          "      </tr>`).join('');"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-79",
+        "langkah": [
+          "Cari penggabungan tag HTML baris 120 di file src/controllers/nilaiController.js yang mencetak nilai i.nama tanpa fungsi pelolosan.",
+          "Bungkus variabel i.nama di dalam pemanggilan fungsi escapeHtml, serupa dengan variabel-variabel lain yang ada dalam fungsi map tersebut."
+        ],
+        "potongan_kode_usulan": "  const baris = items.map((i) => `\n      <tr>\n        <td>${escapeHtml(i.kode)}</td>\n        <td>${escapeHtml(i.nama)}</td>\n        <td class=\"angka\">${escapeHtml(i.sks)}</td>\n        <td class=\"angka\">${escapeHtml(i.nilai_huruf)}</td>\n      </tr>`).join('');",
+        "catatan_risiko": "Pastikan bahwa data nama mata kuliah tidak seharusnya mengandung tag HTML yang secara sadar di-render oleh aplikasi, karena pasca-remediasi, setiap markup di dalam teks nama akan dirender sebagai teks murni.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-07",
+      "file": "src/models/cutiModel.js",
+      "baris": 53,
+      "fungsi": "findOwned",
+      "jenis": "Insecure Direct Object Reference (IDOR)",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Kueri SQL pada fungsi findOwned gagal mengecek parameter mahasiswaId pada kondisi klausa WHERE yang diberikan sehingga hanya mengandalkan ID pengajuan. Hal ini memberikan kebebasan akses IDOR yang memungkinkan mahasiswa membaca detail pengajuan cuti rahasia pengguna lain.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "40115de6739bb753",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 50,
+        "baris": [
+          "",
+          "exports.findOwned = async (id, mahasiswaId) => {",
+          "  const { rows } = await pool.query(",
+          "    `${DETAIL_SELECT} WHERE c.id = $2`,",
+          "    [KEY, id]",
+          "  );",
+          "  return rows[0] || null;"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-639",
+        "langkah": [
+          "Perbarui string SQL DETAIL_SELECT di fungsi findOwned dalam src/models/cutiModel.js agar mewajibkan pengecekan akses hak pemilik (misalnya dengan klausa AND c.mahasiswa_id = $3).",
+          "Tambahkan variabel mahasiswaId sebagai parameter ketiga (atau argumen selanjutnya) dalam array nilai kueri yang dikirimkan melalui pool.query."
+        ],
+        "potongan_kode_usulan": "exports.findOwned = async (id, mahasiswaId) => {\n  const { rows } = await pool.query(\n    `${DETAIL_SELECT} WHERE c.id = $2 AND c.mahasiswa_id = $3`,\n    [KEY, id, mahasiswaId]\n  );\n  return rows[0] || null;",
+        "catatan_risiko": "Anda harus memastikan nama kolom kunci untuk kepemilikan pengguna di dalam kueri tersebut (alias c) benar-benar bernama mahasiswa_id untuk mencegah regresi berupa sintaks error di log kueri.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-08",
+      "file": "src/models/profilModel.js",
+      "baris": 38,
+      "fungsi": "removeEmail",
+      "jenis": "Insecure Direct Object Reference (IDOR)",
+      "cwe": [
+        "CWE-639"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Perintah DELETE pada fitur hapus konfigurasi email di profil sama sekali tidak memverifikasi validitas kepemilikan dari mahasiswa_id pengguna aktif. Kelemahan tersebut mengakibatkan pihak yang login dengan role mahasiswa dapat secara diam-diam menghapus email pengguna mana saja.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "643cc40e108a2e5a",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 35,
+        "baris": [
+          "",
+          "exports.removeEmail = async (id, mahasiswaId) => {",
+          "  const { rowCount } = await pool.query(",
+          "    'DELETE FROM email_mahasiswa WHERE id = $1',",
+          "    [id]",
+          "  );",
+          "  return rowCount > 0;"
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-639",
+        "langkah": [
+          "Ubah struktur teks SQL DELETE di fungsi removeEmail di dalam src/models/profilModel.js untuk menambahkan pemeriksaan kepemilikan melalui klausa AND mahasiswa_id = $2.",
+          "Sisipkan parameter mahasiswaId ke dalam array parameter kueri setelah elemen id (sebagai argumen posisi kedua) pada pemanggilan pool.query."
+        ],
+        "potongan_kode_usulan": "exports.removeEmail = async (id, mahasiswaId) => {\n  const { rowCount } = await pool.query(\n    'DELETE FROM email_mahasiswa WHERE id = $1 AND mahasiswa_id = $2',\n    [id, mahasiswaId]\n  );\n  return rowCount > 0;",
+        "catatan_risiko": "Pastikan bahwa tabel email_mahasiswa memiliki kolom yang mewakili ID kepemilikan dari entitas mahasiswa agar fungsi tidak terganggu oleh klausa kolom yang tidak dikenal. Pengecekan manual pada skema database harus dilakukan.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-09",
+      "file": "src/routes/cutiRoutes.js",
+      "baris": 17,
+      "fungsi": "PUT /:id/status",
+      "jenis": "Missing Authorization",
+      "cwe": [
+        "CWE-862"
+      ],
+      "kategori_owasp": "A01",
+      "penjelasan": "Definisi route yang memproses pembaruan status persetujuan cuti rupanya tidak dilindungi ketat oleh filter middleware authorize('admin'). Ketiadaan verifikasi role menyebabkan setiap pengguna dengan peran apapun bebas mengambil keputusan persetujuan.",
+      "sifat": "vulnerability",
+      "keyakinan": "high",
+      "fingerprint": "f403e7fe68dbcff4",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 14,
+        "baris": [
+          "",
+          "router.get('/', authorize('admin'), c.listAdmin);",
+          "router.get('/:id', authorize('admin'), c.getById);",
+          "router.put('/:id/status', c.updateStatus);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      },
+      "rekomendasi_ai": {
+        "asal": "model",
+        "vendor": "google",
+        "model_diminta": "gemini-3.1-pro-preview",
+        "model_menjawab": "gemini-3.1-pro-preview",
+        "versi_prompt": "remediasi-v1",
+        "hash_prompt": {
+          "system": "52934d0838181548d0f01c638848e7320c24002ce875c646b6568bcabd1173dd",
+          "task": "d729e908177f4ac9da0bd770edcf0f47f0e5a9a77aeda12938577aa3430c964c",
+          "schema": "36a5b205b4ce3832da0491a0baa9593d5297995920a82eaad7383f4943eddec7"
+        },
+        "cwe_dirujuk": "CWE-862",
+        "langkah": [
+          "Identifikasi definisi rute untuk pembaharuan status cuti di file src/routes/cutiRoutes.js (yaitu pada panggilan router.put('/:id/status', ...)).",
+          "Tegakkan kontrol akses berbasis peran (RBAC) pada titik akhir dengan menyisipkan filter middleware authorize('admin') sebelum pemroses rute c.updateStatus."
+        ],
+        "potongan_kode_usulan": "router.get('/', authorize('admin'), c.listAdmin);\nrouter.get('/:id', authorize('admin'), c.getById);\nrouter.put('/:id/status', authorize('admin'), c.updateStatus);\n\nmodule.exports = router;",
+        "catatan_risiko": "Pengguna dengan peran non-admin (misalnya role mahasiswa biasa) tidak akan dapat mengakses jalur ini lagi. Pastikan secara spesifikasi bisnis memang hanya admin yang dizinkan melakukan update status pengajuan tersebut.",
+        "tidak_konsisten": false
+      }
+    },
+    {
+      "id": "T-10",
+      "file": "src/routes/authRoutes.js",
+      "baris": 5,
+      "fungsi": "POST /login",
+      "jenis": "Missing Rate Limiting",
+      "cwe": [
+        "CWE-307"
+      ],
+      "kategori_owasp": "A07",
+      "penjelasan": "Fungsi masuk (login) akun tidak menerapkan skema pembatasan kuota dan frekuensi interaksi harian (rate limit blocker). Layanan akan terbuka pada percobaan tebakan masif sehingga rentan pada eksploitasi serangan sandi otomatis seperti Brute-Force.",
+      "sifat": "hardening",
+      "keyakinan": "high",
+      "fingerprint": "7aeb70d86d293354",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 2,
+        "baris": [
+          "const auth = require('../controllers/authController');",
+          "",
+          "router.post('/register', auth.register);",
+          "router.post('/login', auth.login);",
+          "",
+          "module.exports = router;",
+          ""
+        ]
+      }
+    },
+    {
+      "id": "T-11",
+      "file": "src/app.js",
+      "baris": 10,
+      "fungsi": "",
+      "jenis": "Insecure CORS Configuration",
+      "cwe": [
+        "CWE-942"
+      ],
+      "kategori_owasp": "A02",
+      "penjelasan": "Modul middleware proteksi CORS diinisialisasi secara kosong dengan pengaturan longgar tanpa rincian asal (origin) yang sah. Situs peretas luar menjadi diizinkan untuk membajak lalu lintas otentikasi melalui peramban yang mempercayakan sesi aktif pengguna API.",
+      "sifat": "hardening",
+      "keyakinan": "high",
+      "fingerprint": "0f6508b38c860387",
+      "tanda": [],
+      "potongan_kode": {
+        "mulai": 7,
+        "baris": [
+          "const app = express();",
+          "",
+          "app.use(helmet());",
+          "app.use(cors());",
+          "app.use(express.json());",
+          "",
+          "app.get('/health', (req, res) => {"
+        ]
+      }
+    }
+  ]
+}
